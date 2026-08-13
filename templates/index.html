@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मेरा फ़ायरबेस प्रोजेक्ट</title>
+</head>
+<body>
+
+    <h1>फ़ायरबेस सेटअप सफल रहा!</h1>
+
+    <!-- फ़ायरबेस का मुख्य कोड यहाँ है -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+      import { getAuth } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyAwcEmaEbhe4LYqjRq8_hb9-8qD3mUwfF4",
+        authDomain: "asset-entry.firebaseapp.com",
+        projectId: "asset-entry",
+        storageBucket: "asset-entry.firebasestorage.app",
+        messagingSenderId: "539686251270",
+        appId: "1:539686251270:web:909a4ffc552edca9a84c87",
+        measurementId: "G-NE2EJZLVKQ"
+      };
+
+      // इनिशियलाइज़ेशन
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      console.log("Firebase सफलतापूर्वक कनेक्ट हो गया है!");
+    </script>
+</body>
+</html>
