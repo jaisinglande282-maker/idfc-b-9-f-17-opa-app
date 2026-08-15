@@ -7,58 +7,72 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f2f9f4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header-card { background: linear-gradient(135deg, #1b4332, #2d6a4f); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: none; }
+        .header-card { background: linear-gradient(135deg, #1b4332, #2d6a4f); color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border: none; }
         .card-header { background: #2d6a4f; color: white; font-weight: bold; border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
         .btn-custom { background-color: #2d6a4f; color: white; }
         .btn-custom:hover { background-color: #1b4332; color: white; }
         .btn-whatsapp { background-color: #25D366; color: white; font-weight: bold; }
         .btn-whatsapp:hover { background-color: #1ebc57; color: white; }
         .staff-box { background: #ffffff; border: 1px solid #c8e6c9; border-radius: 8px; padding: 8px; margin-bottom: 6px; }
+        @media (max-width: 768px) {
+            .header-card h2 { font-size: 1.25rem; }
+            .btn { width: 100%; margin-bottom: 5px; }
+            .d-flex-mobile { flex-direction: column; }
+        }
     </style>
 </head>
-<body class="p-3 p-md-4">
+<body class="p-2 p-md-4">
     <div class="container-fluid">
         
         <!-- Header -->
-        <div class="header-card d-flex justify-content-between align-items-center">
+        <div class="header-card d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h2 class="m-0 fw-bold">IDFC FIRST Bank Operations</h2>
-                <p class="m-0 opacity-75">Airoli Gigaplex Building NO-09 | Daily Operations & Parking Logistics</p>
+                <p class="m-0 opacity-75 small">Airoli Gigaplex Building NO-09</p>
             </div>
             <div class="text-end">
                 <span id="liveClock" class="badge bg-light text-dark fs-6 p-2">--:--:--</span>
             </div>
         </div>
 
+        <!-- Mobile Module Selector (Select Work Area) -->
+        <div class="card p-3 mb-3 bg-white border-start border-4 border-success">
+            <label class="form-label fw-bold text-success">📱 Select Report / Section to Work:</label>
+            <select id="sectionSelector" class="form-select form-select-lg fw-bold" onchange="toggleSections()">
+                <option value="all">📱 Show All Reports (Poora Dashboard)</option>
+                <option value="headcountCard">📊 1. Shift General Info & Headcount</option>
+                <option value="securityCard">🛡️ 2. Security Postings Allocation</option>
+                <option value="staffParkingCard">🚘 3. Staff Car & Bike Parking</option>
+                <option value="cabEntryCard">🚕 4. Cab Entry & Staff Drop</option>
+                <option value="cabLogisticsCard">📋 5. Cab Drop Logistics Report</option>
+            </select>
+        </div>
+
         <!-- Global Control Bar -->
-        <div class="card p-3 mb-4 bg-white border-start border-4 border-success">
+        <div class="card p-3 mb-3 bg-white border-start border-4 border-success">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="fw-bold text-success fs-5">⚡ Master Actions & Global Export</span>
-                <div>
-                    <button class="btn btn-outline-danger me-2" onclick="clearAllData()">🗑️ Clear Form Data</button>
-                    <button class="btn btn-success me-2" onclick="exportCombinedReport()">📊 Download Master Excel</button>
-                    <button class="btn btn-whatsapp" onclick="shareCombinedWhatsApp()">📲 Share Master Report on WhatsApp</button>
+                <span class="fw-bold text-success fs-6">⚡ Master Actions</span>
+                <div class="w-100-mobile">
+                    <button class="btn btn-sm btn-outline-danger me-md-2" onclick="clearAllData()">🗑️ Clear Form</button>
+                    <button class="btn btn-sm btn-success me-md-2" onclick="exportCombinedReport()">📊 Master Excel</button>
+                    <button class="btn btn-sm btn-whatsapp" onclick="shareCombinedWhatsApp()">📲 Share Master Report</button>
                 </div>
             </div>
         </div>
 
         <!-- 1. General Info & Shift Headcount -->
-        <div class="card" id="headcountCard">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>📊 1. Shift General Info & Headcount Details</span>
-                <div>
-                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareHeadcountWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-sm btn-light" onclick="exportExcel('headcountTable', 'Headcount_Report')">📊 Download Excel</button>
-                </div>
+        <div class="card app-section" id="headcountCard">
+            <div class="card-header">
+                📊 1. Shift General Info & Headcount Details
             </div>
             <div class="card-body">
-                <div class="row g-3 mb-3">
-                    <div class="col-md-4"><label class="form-label fw-bold">Date</label><input type="text" id="date" class="form-control" readonly></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">Time</label><input type="text" id="time" class="form-control" readonly></div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Shift Selection</label>
-                        <select id="shift" class="form-select">
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Date</label><input type="text" id="date" class="form-control form-control-sm" readonly></div>
+                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Time</label><input type="text" id="time" class="form-control form-control-sm" readonly></div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label fw-bold small">Shift Selection</label>
+                        <select id="shift" class="form-select form-select-sm">
                             <option value="1st Shift">1st Shift</option>
                             <option value="2nd Shift">2nd Shift</option>
                             <option value="3rd Shift">3rd Shift</option>
@@ -68,179 +82,163 @@
                     </div>
                 </div>
 
-                <div class="row g-3">
-                    <div class="col-md-2"><label class="form-label fw-bold">On Roll</label><input type="number" id="onRoll" class="form-control" value="465" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Off Roll</label><input type="number" id="offRoll" class="form-control" value="29" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Security Duty</label><input type="number" id="security" class="form-control" value="5" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">HK Staff</label><input type="number" id="hkStaff" class="form-control" value="10" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Technical</label><input type="number" id="technical" class="form-control" value="2" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Cafeteria</label><input type="number" id="cafeteria" class="form-control" value="5" oninput="calcTotal()"></div>
-                    <div class="col-md-12 mt-3">
-                        <label class="form-label fw-bold text-success">Total Head Count</label>
+                <div class="row g-2">
+                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">On Roll</label><input type="number" id="onRoll" class="form-control form-control-sm" value="465" oninput="calcTotal()"></div>
+                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Off Roll</label><input type="number" id="offRoll" class="form-control form-control-sm" value="29" oninput="calcTotal()"></div>
+                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Security Duty</label><input type="number" id="security" class="form-control form-control-sm" value="5" oninput="calcTotal()"></div>
+                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">HK Staff</label><input type="number" id="hkStaff" class="form-control form-control-sm" value="10" oninput="calcTotal()"></div>
+                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Technical</label><input type="number" id="technical" class="form-control form-control-sm" value="2" oninput="calcTotal()"></div>
+                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Cafeteria</label><input type="number" id="cafeteria" class="form-control form-control-sm" value="5" oninput="calcTotal()"></div>
+                    <div class="col-12 mt-2">
+                        <label class="form-label fw-bold text-success small">Total Head Count</label>
                         <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-success" value="516" readonly>
                     </div>
+                </div>
+
+                <!-- Bottom Action Buttons for Headcount -->
+                <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                    <button class="btn btn-sm btn-light" onclick="exportExcel('headcountTable', 'Headcount_Report')">📊 Download Excel</button>
+                    <button class="btn btn-sm btn-whatsapp" onclick="shareHeadcountWhatsApp()">📲 Share Headcount on WhatsApp</button>
                 </div>
             </div>
         </div>
 
         <!-- 2. Security Allocations -->
-        <div class="card" id="securityCard">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>🛡️ 2. Security Postings Allocation</span>
-                <div>
-                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareSecurityWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-sm btn-light" onclick="exportExcel('securityTable', 'Security_Postings_Report')">📊 Download Excel</button>
-                </div>
+        <div class="card app-section" id="securityCard">
+            <div class="card-header">
+                🛡️ 2. Security Postings Allocation
             </div>
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Select Shift</label>
-                        <select id="securityShift" class="form-select">
+                <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label fw-bold small">Select Shift</label>
+                        <select id="securityShift" class="form-select form-select-sm">
                             <option value="1st Shift">1st Shift</option>
                             <option value="2nd Shift">2nd Shift</option>
                             <option value="3rd Shift">3rd Shift</option>
                         </select>
                     </div>
-                    <div class="col-md-4"><label class="form-label fw-bold">Reception 01</label><input type="text" id="reception01" class="form-control" value="Pooja J."></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">Reception 02</label><input type="text" id="reception02" class="form-control" value="Priti P."></div>
-                    <div class="col-md-6"><label class="form-label fw-bold">PTL Security</label><input type="text" id="ptlSecurity" class="form-control" value="Surendra O."></div>
-                    <div class="col-md-6"><label class="form-label fw-bold">BMS</label><input type="text" id="supervisor" class="form-control" value="Jaysing Lande"></div>
+                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Reception 01</label><input type="text" id="reception01" class="form-control form-control-sm" value="Pooja J."></div>
+                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Reception 02</label><input type="text" id="reception02" class="form-control form-control-sm" value="Priti P."></div>
+                    <div class="col-6 col-md-6"><label class="form-label fw-bold small">PTL Security</label><input type="text" id="ptlSecurity" class="form-control form-control-sm" value="Surendra O."></div>
+                    <div class="col-6 col-md-6"><label class="form-label fw-bold small">BMS</label><input type="text" id="supervisor" class="form-control form-control-sm" value="Jaysing Lande"></div>
+                </div>
+
+                <!-- Bottom Action Buttons for Security Allocation -->
+                <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
+                    <button class="btn btn-sm btn-light" onclick="exportExcel('securityTable', 'Security_Postings_Report')">📊 Download Excel</button>
+                    <button class="btn btn-sm btn-whatsapp" onclick="shareSecurityWhatsApp()">📲 Share Security on WhatsApp</button>
                 </div>
             </div>
         </div>
 
         <!-- 3. Staff Car & Bike Parking Entry Form -->
-        <div class="card">
+        <div class="card app-section" id="staffParkingCard">
             <div class="card-header">🚘 3. Staff Car & Bike Parking Entry Form</div>
             <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Vehicle Type</label>
-                        <select id="staff_vehicle_type" class="form-select">
+                <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Vehicle Type</label>
+                        <select id="staff_vehicle_type" class="form-select form-select-sm">
                             <option value="Car">Car</option>
                             <option value="Bike">Bike</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Vehicle Number</label>
-                        <input type="text" id="staff_vehicle_no" class="form-control text-uppercase" placeholder="MH04XX1234" onkeyup="searchStaffVehicle()">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Vehicle Number</label>
+                        <input type="text" id="staff_vehicle_no" class="form-control form-control-sm text-uppercase" placeholder="MH04XX1234" onkeyup="searchStaffVehicle()">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Staff ID</label>
-                        <input type="text" id="staff_id" class="form-control text-uppercase" placeholder="IDFC1234">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Staff ID</label>
+                        <input type="text" id="staff_id" class="form-control form-control-sm text-uppercase" placeholder="IDFC1234">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Staff Name</label>
-                        <input type="text" id="staff_name" class="form-control" placeholder="Full Name">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Staff Name</label>
+                        <input type="text" id="staff_name" class="form-control form-control-sm" placeholder="Full Name">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Mobile</label>
-                        <input type="text" id="staff_mobile" class="form-control" placeholder="Mobile Number">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Mobile</label>
+                        <input type="text" id="staff_mobile" class="form-control form-control-sm" placeholder="Mobile Number">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Slot No.</label>
-                        <input type="text" id="staff_slot" class="form-control" placeholder="P2-102">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Slot No.</label>
+                        <input type="text" id="staff_slot" class="form-control form-control-sm" placeholder="P2-102">
                     </div>
-                    <div class="col-md-6 text-end align-self-end">
-                        <button class="btn btn-custom px-4" onclick="saveStaffParking()">💾 Save Staff Parking</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Cab Entry Form (Driver Details Top) -->
-        <div class="card">
-            <div class="card-header">🚕 4. Cab Entry Form (Driver Details Top)</div>
-            <div class="card-body">
-                <h6 class="fw-bold text-success border-bottom pb-2">👤 Driver Details</h6>
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Driver Name</label>
-                        <input type="text" id="driver_name" class="form-control" placeholder="Driver Full Name">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Driver Mobile</label>
-                        <input type="text" id="driver_mobile" class="form-control" placeholder="Mobile Number">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Cab Number</label>
-                        <input type="text" id="cab_no" class="form-control text-uppercase" placeholder="MH04AB1234" onkeyup="searchCab()">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Seater Capacity</label>
-                        <select id="seater_capacity" class="form-select">
-                            <option value="4-Seater">4-Seater</option>
-                            <option value="6-Seater">6-Seater</option>
-                            <option value="7-Seater">7-Seater</option>
-                            <option value="Bus / Tempo">Bus / Tempo</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Escort Guard</label>
-                        <input type="text" id="guard_name" class="form-control" placeholder="Guard Name">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Pickup Time</label>
-                        <input type="time" id="pickup_time" class="form-control">
+                    <div class="col-12 mt-2 text-end">
+                        <button class="btn btn-custom btn-sm px-4" onclick="saveStaffParking()">💾 Save Staff Parking</button>
                     </div>
                 </div>
 
-                <h6 class="fw-bold text-secondary border-bottom pb-2 mt-4">👥 Staff Drop Details (With Sr. No.)</h6>
-                <div id="staffContainer"></div>
-
-                <div class="text-end mt-3">
-                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Cab Entry</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. Staff Car & Bike Parking Report -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span>🅿️ 5. Staff Car & Bike Parking Operations Report</span>
-                <div>
-                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareStaffParkingWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-light btn-sm" onclick="exportExcel('staffParkingTable', 'Staff_Parking_Report')">📊 Download Excel</button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover" id="staffParkingTable">
-                        <thead class="table-success">
-                            <tr>
-                                <th>Sr. No.</th>
-                                <th>Date & Time</th>
-                                <th>Type</th>
-                                <th>Vehicle No</th>
-                                <th>Staff Name (ID)</th>
-                                <th>Mobile</th>
-                                <th>Slot No</th>
-                            </tr>
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-sm" id="staffParkingTable">
+                        <thead class="table-success small">
+                            <tr><th>Sr</th><th>Time</th><th>Type</th><th>Vehicle No</th><th>Staff</th><th>Slot</th></tr>
                         </thead>
-                        <tbody id="staffParkingLogsBody">
-                            <tr><td colspan="7" class="text-center text-muted">No staff vehicle logs recorded today.</td></tr>
+                        <tbody id="staffParkingLogsBody" class="small">
+                            <tr><td colspan="6" class="text-center text-muted">No entries.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- 6. Cab Drop Logistics Report -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span>🚕 6. Cab Drop Logistics Report</span>
-                <div>
-                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareCabLogisticsWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Cab_Logistics_Report')">📊 Download Excel</button>
+        <!-- 4. Cab Entry Form -->
+        <div class="card app-section" id="cabEntryCard">
+            <div class="card-header">🚕 4. Cab Entry Form (Driver Details Top)</div>
+            <div class="card-body">
+                <h6 class="fw-bold text-success border-bottom pb-1 small">👤 Driver Details</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Driver Name</label>
+                        <input type="text" id="driver_name" class="form-control form-control-sm" placeholder="Driver Name">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Driver Mobile</label>
+                        <input type="text" id="driver_mobile" class="form-control form-control-sm" placeholder="Mobile">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Cab Number</label>
+                        <input type="text" id="cab_no" class="form-control form-control-sm text-uppercase" placeholder="MH04AB1234" onkeyup="searchCab()">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold small">Seater</label>
+                        <select id="seater_capacity" class="form-select form-select-sm">
+                            <option value="4-Seater">4-Seater</option>
+                            <option value="6-Seater">6-Seater</option>
+                            <option value="7-Seater">7-Seater</option>
+                            <option value="Bus / Tempo">Bus / Tempo</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <label class="form-label fw-bold small">Escort Guard</label>
+                        <input type="text" id="guard_name" class="form-control form-control-sm" placeholder="Guard Name">
+                    </div>
+                    <div class="col-6 col-md-6">
+                        <label class="form-label fw-bold small">Pickup Time</label>
+                        <input type="time" id="pickup_time" class="form-control form-control-sm">
+                    </div>
                 </div>
+
+                <h6 class="fw-bold text-secondary border-bottom pb-1 mt-3 small">👥 Staff Drop Details (Sr. No.)</h6>
+                <div id="staffContainer"></div>
+
+                <div class="text-end mt-2">
+                    <button class="btn btn-custom btn-sm px-4" onclick="submitCabLog()">💾 Save Cab Entry</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Cab Drop Logistics Report -->
+        <div class="card app-section" id="cabLogisticsCard">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <span>🚕 5. Cab Drop Logistics Report</span>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover" id="cabTable">
-                        <thead class="table-success">
+                    <table class="table table-bordered table-sm" id="cabTable">
+                        <thead class="table-success small">
                             <tr>
-                                <th>Sr. No.</th>
+                                <th>Sr</th>
                                 <th>Date</th>
                                 <th>Cab No</th>
                                 <th>Seater</th>
@@ -250,10 +248,14 @@
                                 <th>Staff Drop Details</th>
                             </tr>
                         </thead>
-                        <tbody id="cabLogsBody">
+                        <tbody id="cabLogsBody" class="small">
                             <tr><td colspan="8" class="text-center text-muted">No cab log entries recorded.</td></tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-2 pt-2 border-top">
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Cab_Logistics_Report')">📊 Download Excel</button>
+                    <button class="btn btn-sm btn-whatsapp" onclick="shareCabLogisticsWhatsApp()">📲 Share Cab Logistics</button>
                 </div>
             </div>
         </div>
@@ -272,6 +274,18 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+        function toggleSections() {
+            let selected = document.getElementById('sectionSelector').value;
+            let sections = document.querySelectorAll('.app-section');
+            sections.forEach(sec => {
+                if (selected === 'all' || sec.id === selected) {
+                    sec.style.display = 'block';
+                } else {
+                    sec.style.display = 'none';
+                }
+            });
+        }
+
         function calcTotal() {
             const fields = ['onRoll', 'offRoll', 'security', 'hkStaff', 'technical', 'cafeteria'];
             let sum = 0;
@@ -283,12 +297,12 @@
         for (let i = 1; i <= 6; i++) {
             container.innerHTML += `
                 <div class="staff-box">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-md-1"><span class="badge bg-secondary">Sr. ${i}</span></div>
-                        <div class="col-md-2"><input type="text" id="emp_id_${i}" class="form-control form-control-sm text-uppercase" placeholder="Emp ID" onkeyup="searchEmp(${i})"></div>
-                        <div class="col-md-3"><input type="text" id="emp_name_${i}" class="form-control form-control-sm" placeholder="Staff Name"></div>
-                        <div class="col-md-3"><input type="text" id="emp_mob_${i}" class="form-control form-control-sm" placeholder="Mobile"></div>
-                        <div class="col-md-3"><input type="text" id="emp_loc_${i}" class="form-control form-control-sm" placeholder="Drop Location"></div>
+                    <div class="row g-1 align-items-center">
+                        <div class="col-2 col-md-1"><span class="badge bg-secondary">Sr ${i}</span></div>
+                        <div class="col-5 col-md-2"><input type="text" id="emp_id_${i}" class="form-control form-control-sm text-uppercase" placeholder="Emp ID" onkeyup="searchEmp(${i})"></div>
+                        <div class="col-5 col-md-3"><input type="text" id="emp_name_${i}" class="form-control form-control-sm" placeholder="Staff Name"></div>
+                        <div class="col-6 col-md-3"><input type="text" id="emp_mob_${i}" class="form-control form-control-sm" placeholder="Mobile"></div>
+                        <div class="col-6 col-md-3"><input type="text" id="emp_loc_${i}" class="form-control form-control-sm" placeholder="Drop Location"></div>
                     </div>
                 </div>
             `;
@@ -369,7 +383,7 @@
             let tbody = document.getElementById('staffParkingLogsBody');
             tbody.innerHTML = '';
             if (staffParkingList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No staff vehicle logs recorded today.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No entries.</td></tr>';
                 return;
             }
             staffParkingList.forEach((item, index) => {
@@ -379,8 +393,7 @@
                         <td>${item.time}</td>
                         <td>${item.type}</td>
                         <td class="fw-bold">${item.vehNo}</td>
-                        <td>${item.name} (${item.id})</td>
-                        <td>${item.mob}</td>
+                        <td>${item.name}</td>
                         <td>${item.slot}</td>
                     </tr>
                 `;
@@ -394,6 +407,9 @@
             let driverMobile = document.getElementById('driver_mobile').value;
             let guardName = document.getElementById('guard_name').value;
             let pickupTime = document.getElementById('pickup_time').value;
+
+            let currentDate = document.getElementById('date').value || new Date().toLocaleDateString('en-IN');
+            let currentTime = document.getElementById('time').value || new Date().toLocaleTimeString('en-IN');
 
             let staffList = [];
             for (let i = 1; i <= 6; i++) {
@@ -412,13 +428,23 @@
             let res = await fetch('/api/add_cab_log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cab_no: cabNo, seater_capacity: seater, driver_name: driverName, driver_mobile: driverMobile, guard_name: guardName, pickup_time: pickupTime, staff_list: staffList })
+                body: JSON.stringify({ 
+                    entry_date: currentDate,
+                    entry_time: currentTime,
+                    cab_no: cabNo, 
+                    seater_capacity: seater, 
+                    driver_name: driverName, 
+                    driver_mobile: driverMobile, 
+                    guard_name: guardName, 
+                    pickup_time: pickupTime, 
+                    staff_list: staffList 
+                })
             });
 
             let data = await res.json();
             if (data.status === 'success') {
                 renderTable(data.logs);
-                alert("Cab Log Saved Successfully!");
+                alert("Cab Log Real-Time Ke Saath Save Ho Gaya!");
                 clearCabForm();
             }
         }
@@ -468,23 +494,22 @@
             }
         }
 
-        // WhatsApp Share Functions (Same Clean Format & Signature)
-       function shareHeadcountWhatsApp() {
-    let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
-        `Airoli Gigaplex Building NO-09\n\n` +
-        `1] On roll Employee:-${document.getElementById('onRoll').value}\n` +
-        `2] Off roll Employee:-${document.getElementById('offRoll').value}\n` +
-        `3] Security duty on:-${document.getElementById('security').value}\n` +
-        `4] H K staff on duty:-${document.getElementById('hkStaff').value}\n` +
-        `5] Technical staff:-${document.getElementById('technical').value}\n` +
-        `6] Cafeteria staff:-${document.getElementById('cafeteria').value}\n` +
-        `Total head count:-${document.getElementById('total').value}\n\n` +
-        `Regards,\n` +
-        `IDFC First bank\n` +
-        `Airoli Gigaplex Building NO-09\n` +
-        `(Jaysing lande)`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-}
+        function shareHeadcountWhatsApp() {
+            let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n` +
+                `1] On roll Employee:-${document.getElementById('onRoll').value}\n` +
+                `2] Off roll Employee:-${document.getElementById('offRoll').value}\n` +
+                `3] Security duty on:-${document.getElementById('security').value}\n` +
+                `4] H K staff on duty:-${document.getElementById('hkStaff').value}\n` +
+                `5] Technical staff:-${document.getElementById('technical').value}\n` +
+                `6] Cafeteria staff:-${document.getElementById('cafeteria').value}\n` +
+                `Total head count:-${document.getElementById('total').value}\n\n` +
+                `Regards,\n` +
+                `IDFC First bank\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `(Jaysing lande)`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
 
         function shareSecurityWhatsApp() {
             let secShift = document.getElementById('securityShift').value;
@@ -499,16 +524,6 @@
                 `IDFC First bank\n` +
                 `Airoli Gigaplex Building NO-09\n` +
                 `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareStaffParkingWhatsApp() {
-            let text = `Staff Parking Operations Report Date:-${document.getElementById('date').value}\n` +
-                `Airoli Gigaplex Building NO-09\n\n`;
-            staffParkingList.forEach((s, idx) => {
-                text += `${idx + 1}] ${s.type}: ${s.vehNo} | ${s.name} | Slot: ${s.slot}\n`;
-            });
-            text += `\nRegards,\nIDFC First bank\nAiroli Gigaplex Building NO-09\n(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
