@@ -1,243 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IDFC FIRST Bank - Operations Dashboard</title>
-  <style>
-    :root {
-      --primary-color: #9c27b0;
-      --secondary-color: #673ab7;
-      --bg-color: #f4f6f9;
-      --card-bg: #ffffff;
-      --text-color: #333;
-      --border-color: #e0e0e0;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
-
-    .dashboard-container { max-width: 900px; margin: 0 auto; }
-    
-    .header-card {
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    .header-card h1 { font-size: 1.6rem; margin-bottom: 5px; }
-    .header-card p { opacity: 0.9; font-size: 0.9rem; }
-
-    .card { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
-    .card-title { font-size: 1.1rem; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; font-weight: bold; }
-
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-
-    .form-group { display: flex; flex-direction: column; margin-bottom: 10px; }
-    .form-group label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #555; }
-    .form-group input, .form-group select {
-      padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; outline: none; transition: 0.3s;
-    }
-    .form-group input:focus, .form-group select:focus { border-color: var(--primary-color); }
-    .form-group input[readonly] { background-color: #eef2f5; font-weight: bold; }
-
-    .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 10px; }
-    .btn {
-      padding: 12px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.9rem;
-    }
-    .btn-save { background-color: #28a745; color: white; }
-    .btn-save:hover { background-color: #218838; }
-    .btn-copy { background-color: #007bff; color: white; }
-    .btn-copy:hover { background-color: #0069d9; }
-
-    .preview-box {
-      background: #272c34; color: #abb2bf; padding: 15px; border-radius: 8px; font-family: 'Courier New', Courier, monospace;
-      white-space: pre-wrap; font-size: 0.9rem; margin-top: 15px; line-height: 1.4; border-left: 4px solid var(--primary-color);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDFC Operations & Night Cab Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card-header { background: #9c0612; color: white; font-weight: bold; }
+        .btn-custom { background-color: #9c0612; color: white; }
+        .btn-custom:hover { background-color: #78040d; color: white; }
+        .staff-box { background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+    </style>
 </head>
-<body>
+<body class="p-3 p-md-4">
+    <div class="container-fluid">
+        <!-- General Info & Auto Live Clock Header -->
+        <div class="card mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center bg-white rounded">
+                <div>
+                    <h4 class="text-danger fw-bold m-0">IDFC Security Operations Dashboard</h4>
+                    <small class="text-muted">Night Cab Facility Management</small>
+                </div>
+                <div class="text-end">
+                    <span id="liveClock" class="badge bg-dark fs-6">--:--:--</span>
+                </div>
+            </div>
+        </div>
 
-<div class="dashboard-container">
-  
-  <div class="header-card">
-    <h1>IDFC FIRST Bank Operations Dashboard</h1>
-    <p>Airoli Gigaplex Building NO-09 | Daily Shift Management System</p>
-  </div>
+        <!-- Night Cab Drop Form -->
+        <div class="card mb-4">
+            <div class="card-header">🌙 Night Cab Drop Facility Entry (1 to 5 Staff Per Cab)</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Cab Number</label>
+                        <input type="text" id="cab_no" class="form-control text-uppercase" placeholder="MH04AB1234" onkeyup="searchCab()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Driver Name</label>
+                        <input type="text" id="driver_name" class="form-control" placeholder="Driver Full Name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Driver Mobile</label>
+                        <input type="text" id="driver_mobile" class="form-control" placeholder="10-digit Mobile">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Security Guard Name</label>
+                        <input type="text" id="guard_name" class="form-control" placeholder="Guard Name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Pick-up Time</label>
+                        <input type="time" id="pickup_time" class="form-control">
+                    </div>
+                </div>
 
-  <div class="card">
-    <div class="card-title">General Info</div>
-    <div class="grid-3">
-      <div class="form-group">
-        <label>Date</label>
-        <input type="text" id="date" value="13/08/2026">
-      </div>
-      <div class="form-group">
-        <label>Time</label>
-        <input type="text" id="time" value="01:30 PM">
-      </div>
-      <div class="form-group">
-        <label>Shift Selection</label>
-        <select id="shift">
-          <option value="1st Shift">1st Shift</option>
-          <option value="2nd Shift">2nd Shift</option>
-          <option value="3rd Shift">3rd Shift</option>
-          <option value="General Shift">General Shift</option>
-          <option value="PTL Shift">PTL Shift</option>
-        </select>
-      </div>
+                <hr>
+                <h6 class="fw-bold text-secondary mb-3">👥 Staff Drop Details (Up to 5 Staff)</h6>
+                <div id="staffContainer">
+                    <!-- Dynamic 5 Staff Rows -->
+                </div>
+
+                <div class="text-end mt-3">
+                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Cab Log & Update Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Report & Excel Download -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>📋 Daily Night Cab Drop Report</span>
+                <div>
+                    <button class="btn btn-light btn-sm me-2" onclick="copyReportText()">📋 Copy Text</button>
+                    <button class="btn btn-success btn-sm" onclick="downloadExcel()">📊 Download Excel (CSV)</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="cabTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Cab No</th>
+                                <th>Driver Details</th>
+                                <th>Guard</th>
+                                <th>Time</th>
+                                <th>Staff Details (ID | Name | Mobile | Drop)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cabLogsBody">
+                            <tr><td colspan="6" class="text-center text-muted">No Cab entries registered today.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">1. Headcount Details</div>
-    <div class="grid-3">
-      <div class="form-group"><label>On Roll Employee</label><input type="number" id="onRoll" value="461" oninput="calcTotal()"></div>
-      <div class="form-group"><label>Off Roll Employee</label><input type="number" id="offRoll" value="30" oninput="calcTotal()"></div>
-      <div class="form-group"><label>Security Duty</label><input type="number" id="security" value="04" oninput="calcTotal()"></div>
-      <div class="form-group"><label>HK Staff Duty</label><input type="number" id="hkStaff" value="09" oninput="calcTotal()"></div>
-      <div class="form-group"><label>Technical Staff</label><input type="number" id="technical" value="01" oninput="calcTotal()"></div>
-      <div class="form-group"><label>Cafeteria Staff</label><input type="number" id="cafeteria" value="07" oninput="calcTotal()"></div>
-    </div>
-    <div class="form-group" style="margin-top: 10px;">
-      <label>Total Head Count</label>
-      <input type="number" id="total" value="512" readonly>
-    </div>
-  </div>
+    <script>
+        // Live Date Time Engine
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('liveClock').innerText = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' });
+        }, 1000);
 
-  <div class="card">
-    <div class="card-title">2. Security & Postings Allocation</div>
-    <div class="grid-2">
-      <div class="form-group"><label>Reception 01</label><input type="text" id="reception01" value="Pooja J."></div>
-      <div class="form-group"><label>Reception 02</label><input type="text" id="reception02" value="Priya S."></div>
-      <div class="form-group"><label>PTL Duty</label><input type="text" id="ptlDuty" value="Rahul D."></div>
-      <div class="form-group"><label>BMS Operator</label><input type="text" id="bmsOperator" value="Jaysing lande"></div>
-    </div>
-  </div>
+        // Generate 5 Staff Input Rows
+        const container = document.getElementById('staffContainer');
+        for (let i = 1; i <= 5; i++) {
+            container.innerHTML += `
+                <div class="staff-box">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-1"><span class="badge bg-secondary">Staff ${i}</span></div>
+                        <div class="col-md-2"><input type="text" id="emp_id_${i}" class="form-control form-control-sm text-uppercase" placeholder="Emp ID" onkeyup="searchEmp(${i})"></div>
+                        <div class="col-md-3"><input type="text" id="emp_name_${i}" class="form-control form-control-sm" placeholder="Staff Name"></div>
+                        <div class="col-md-3"><input type="text" id="emp_mob_${i}" class="form-control form-control-sm" placeholder="Mobile"></div>
+                        <div class="col-md-3"><input type="text" id="emp_loc_${i}" class="form-control form-control-sm" placeholder="Drop Place"></div>
+                    </div>
+                </div>
+            `;
+        }
 
-  <div class="card">
-    <div class="card-title">3. Parking Duty Details</div>
-    <div class="grid-3">
-      <div class="form-group"><label>Parking Duty Staff</label><input type="text" id="parkingStaff" value="Vikram Singh"></div>
-      <div class="form-group"><label>Total Vehicles Parked</label><input type="number" id="totalVehicles" value="45"></div>
-      <div class="form-group"><label>Available Parking Slots</label><input type="number" id="availableSlots" value="15"></div>
-    </div>
-    <div class="form-group" style="margin-top: 10px;">
-      <label>Updated By</label>
-      <input type="text" id="updatedBy" value="Jaysing lande">
-    </div>
-  </div>
+        // Auto Fetch Cab Driver Details
+        async function searchCab() {
+            let cabNo = document.getElementById('cab_no').value.trim();
+            if (cabNo.length >= 6) {
+                let res = await fetch('/api/get_cab/' + cabNo);
+                let data = await res.json();
+                if (data.found) {
+                    document.getElementById('driver_name').value = data.driver_name;
+                    document.getElementById('driver_mobile').value = data.driver_mobile;
+                }
+            }
+        }
 
-  <div class="card">
-    <div class="card-title">Action & Reports Export</div>
-    <div class="btn-grid">
-      <button class="btn btn-save" onclick="saveToStorage()">Save Backup (30 Days)</button>
-      <button class="btn btn-copy" onclick="copyHeadcount()">Copy Headcount Report</button>
-      <button class="btn btn-copy" onclick="copySecurity()">Copy Security Report</button>
-      <button class="btn btn-copy" onclick="copyParking()">Copy Parking Report</button>
-    </div>
-    <div class="preview-box" id="previewArea">Select a report button to view preview...</div>
-  </div>
+        // Auto Fetch Staff Details using Emp ID
+        async function searchEmp(index) {
+            let empId = document.getElementById(`emp_id_${index}`).value.trim();
+            if (empId.length >= 3) {
+                let res = await fetch('/api/get_emp/' + empId);
+                let data = await res.json();
+                if (data.found) {
+                    document.getElementById(`emp_name_${index}`).value = data.name;
+                    document.getElementById(`emp_mob_${index}`).value = data.mobile;
+                    document.getElementById(`emp_loc_${index}`).value = data.location;
+                }
+            }
+        }
 
-</div>
+        // Submit Entry
+        async function submitCabLog() {
+            let cabNo = document.getElementById('cab_no').value;
+            let driverName = document.getElementById('driver_name').value;
+            let driverMobile = document.getElementById('driver_mobile').value;
+            let guardName = document.getElementById('guard_name').value;
+            let pickupTime = document.getElementById('pickup_time').value;
 
-<script>
-  const formatNum = (num) => String(num).padStart(2, '0');
+            let staffList = [];
+            for (let i = 1; i <= 5; i++) {
+                let id = document.getElementById(`emp_id_${i}`).value;
+                let name = document.getElementById(`emp_name_${i}`).value;
+                let mobile = document.getElementById(`emp_mob_${i}`).value;
+                let location = document.getElementById(`emp_loc_${i}`).value;
+                if (id || name) {
+                    staffList.push({ id, name, mobile, location });
+                }
+            }
 
-  function calcTotal() {
-    const fields = ['onRoll', 'offRoll', 'security', 'hkStaff', 'technical', 'cafeteria'];
-    let total = fields.reduce((sum, id) => sum + (parseInt(document.getElementById(id).value) || 0), 0);
-    document.getElementById('total').value = total;
-  }
+            if (!cabNo || staffList.length === 0) {
+                alert('Please enter Cab Number and at least 1 Staff!');
+                return;
+            }
 
-  function copyText(msg) {
-    navigator.clipboard.writeText(msg);
-    document.getElementById('previewArea').innerText = msg;
-    alert("Copied to Clipboard!");
-  }
+            let res = await fetch('/api/add_cab_log', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cab_no: cabNo, driver_name: driverName, driver_mobile: driverMobile, guard_name: guardName, pickup_time: pickupTime, staff_list: staffList })
+            });
 
-  function copyHeadcount() {
-    const msg = `Date:-${document.getElementById('date').value}
-Airoli Gigaplex Building NO-09
+            let data = await res.json();
+            if (data.status === 'success') {
+                renderTable(data.logs);
+                alert("Cab Drop Entry Saved Successfully!");
+            }
+        }
 
-1] On roll Employee:-${document.getElementById('onRoll').value}
-2] Off roll Employee:-${document.getElementById('offRoll').value}
-3] Security duty on:-${formatNum(document.getElementById('security').value)}
-4] H K staff on duty:-${formatNum(document.getElementById('hkStaff').value)}
-5] Technical staff:-${formatNum(document.getElementById('technical').value)}
-6] Cafeteria staff:-${formatNum(document.getElementById('cafeteria').value)}
-Total head count:-${document.getElementById('total').value}
+        function renderTable(logs) {
+            let tbody = document.getElementById('cabLogsBody');
+            tbody.innerHTML = '';
+            logs.forEach(l => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${l[6]}</td>
+                        <td class="fw-bold">${l[0]}</td>
+                        <td>${l[1]} (${l[2]})</td>
+                        <td>${l[3]}</td>
+                        <td>${l[4]}</td>
+                        <td>${l[5]}</td>
+                    </tr>
+                `;
+            });
+        }
 
-Regards,
-IDFC First bank
-Airoli Gigaplex Building NO-09
-(${document.getElementById('updatedBy').value})`;
-
-    copyText(msg);
-  }
-
-  function copySecurity() {
-    const msg = `Date:-${document.getElementById('date').value}
-Time:-${document.getElementById('time').value}
-Shift:-${document.getElementById('shift').value}
-Airoli Gigaplex Building NO-09
-
-Security Duty Posting:
-1] Reception 01:-${document.getElementById('reception01').value}
-2] Reception 02:-${document.getElementById('reception02').value}
-3] PTL Duty:-${document.getElementById('ptlDuty').value}
-4] BMS Operator:-${document.getElementById('bmsOperator').value}
-Total Security staff:-${formatNum(document.getElementById('security').value)}
-
-Regards,
-IDFC First bank
-Airoli Gigaplex Building NO-09
-(${document.getElementById('updatedBy').value})`;
-
-    copyText(msg);
-  }
-
-  function copyParking() {
-    const msg = `Date:-${document.getElementById('date').value}
-Time:-${document.getElementById('time').value}
-Shift:-${document.getElementById('shift').value}
-Airoli Gigaplex Building NO-09
-
-Parking Duty Posting:
-1] Parking Duty Staff:-${document.getElementById('parkingStaff').value}
-2] Total Vehicles Parked:-${document.getElementById('totalVehicles').value}
-3] Available Parking Slots:-${document.getElementById('availableSlots').value}
-
-Regards,
-IDFC First bank
-Airoli Gigaplex Building NO-09
-(${document.getElementById('updatedBy').value})`;
-
-    copyText(msg);
-  }
-
-  function saveToStorage() {
-    const record = {
-      id: Date.now(),
-      date: document.getElementById('date').value,
-      time: document.getElementById('time').value,
-      shift: document.getElementById('shift').value,
-      totalHeadcount: document.getElementById('total').value,
-      updatedBy: document.getElementById('updatedBy').value,
-      savedAt: new Date().toISOString()
-    };
-
-    let history = JSON.parse(localStorage.getItem('idfc_operations_backup')) || [];
-    history.push(record);
-
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    history = history.filter(item => new Date(item.savedAt) >= thirtyDaysAgo);
-
-    localStorage.setItem('idfc_operations_backup', JSON.stringify(history));
-    alert("Data saved in 30-day backup storage!");
-  }
-</script>
-
+        // Export Report to Excel (CSV Format)
+        function downloadExcel() {
+            let table = document.getElementById("cabTable");
+            let rows = table.querySelectorAll("tr");
+            let csv = [];
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) 
+                    row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+            let downloadLink = document.createElement("a");
+            downloadLink.download = `Night_Cab_Report_${new Date().toISOString().slice(0,10)}.csv`;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.click();
+        }
+    </script>
 </body>
 </html>
