@@ -37,8 +37,8 @@
                 <span class="fw-bold text-success fs-5">⚡ Master Actions & Global Export</span>
                 <div>
                     <button class="btn btn-outline-danger me-2" onclick="clearAllData()">🗑️ Clear Form Data</button>
-                    <button class="btn btn-success me-2" onclick="exportCombinedReport()">📊 Download Combined Master Excel</button>
-                    <button class="btn btn-whatsapp" onclick="shareCombinedWhatsApp()">📲 Share Combined Report on WhatsApp</button>
+                    <button class="btn btn-success me-2" onclick="exportCombinedReport()">📊 Download Master Excel</button>
+                    <button class="btn btn-whatsapp" onclick="shareCombinedWhatsApp()">📲 Share Master Report on WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -80,20 +80,6 @@
                         <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-success" value="516" readonly>
                     </div>
                 </div>
-
-                <table id="headcountTable" style="display:none;">
-                    <tr><th>Parameter</th><th>Count</th></tr>
-                    <tr><td>Date</td><td id="e_date"></td></tr>
-                    <tr><td>Time</td><td id="e_time"></td></tr>
-                    <tr><td>Shift</td><td id="e_shift"></td></tr>
-                    <tr><td>On Roll</td><td id="e_onRoll"></td></tr>
-                    <tr><td>Off Roll</td><td id="e_offRoll"></td></tr>
-                    <tr><td>Security Duty</td><td id="e_security"></td></tr>
-                    <tr><td>HK Staff</td><td id="e_hkStaff"></td></tr>
-                    <tr><td>Technical</td><td id="e_technical"></td></tr>
-                    <tr><td>Cafeteria</td><td id="e_cafeteria"></td></tr>
-                    <tr><td>Total Head Count</td><td id="e_total"></td></tr>
-                </table>
             </div>
         </div>
 
@@ -121,28 +107,67 @@
                     <div class="col-md-6"><label class="form-label fw-bold">PTL Security</label><input type="text" id="ptlSecurity" class="form-control" value="Surendra O."></div>
                     <div class="col-md-6"><label class="form-label fw-bold">BMS</label><input type="text" id="supervisor" class="form-control" value="Jaysing Lande"></div>
                 </div>
-
-                <table id="securityTable" style="display:none;">
-                    <tr><th>Posting Area</th><th>Assigned Personnel</th></tr>
-                    <tr><td>Shift</td><td id="e_secShift"></td></tr>
-                    <tr><td>Reception 01</td><td id="e_reception01"></td></tr>
-                    <tr><td>Reception 02</td><td id="e_reception02"></td></tr>
-                    <tr><td>PTL Security</td><td id="e_ptlSecurity"></td></tr>
-                    <tr><td>BMS</td><td id="e_supervisor"></td></tr>
-                </table>
             </div>
         </div>
 
-        <!-- 3. Cab & Vehicle Entry Form -->
+        <!-- 3. Staff Car & Bike Parking Entry Form -->
         <div class="card">
-            <div class="card-header">🚗 3. Parking & Cab Entry Form (Up to 6 Staff per Cab)</div>
+            <div class="card-header">🚘 3. Staff Car & Bike Parking Entry Form</div>
             <div class="card-body">
                 <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Vehicle Type</label>
+                        <select id="staff_vehicle_type" class="form-select">
+                            <option value="Car">Car</option>
+                            <option value="Bike">Bike</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Vehicle Number</label>
+                        <input type="text" id="staff_vehicle_no" class="form-control text-uppercase" placeholder="MH04XX1234" onkeyup="searchStaffVehicle()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Staff ID</label>
+                        <input type="text" id="staff_id" class="form-control text-uppercase" placeholder="IDFC1234">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Staff Name</label>
+                        <input type="text" id="staff_name" class="form-control" placeholder="Full Name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Mobile</label>
+                        <input type="text" id="staff_mobile" class="form-control" placeholder="Mobile Number">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Slot No.</label>
+                        <input type="text" id="staff_slot" class="form-control" placeholder="P2-102">
+                    </div>
+                    <div class="col-md-6 text-end align-self-end">
+                        <button class="btn btn-custom px-4" onclick="saveStaffParking()">💾 Save Staff Parking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Cab Entry Form (Driver Details Top) -->
+        <div class="card">
+            <div class="card-header">🚕 4. Cab Entry Form (Driver Details Top)</div>
+            <div class="card-body">
+                <h6 class="fw-bold text-success border-bottom pb-2">👤 Driver Details</h6>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Driver Name</label>
+                        <input type="text" id="driver_name" class="form-control" placeholder="Driver Full Name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Driver Mobile</label>
+                        <input type="text" id="driver_mobile" class="form-control" placeholder="Mobile Number">
+                    </div>
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Cab Number</label>
                         <input type="text" id="cab_no" class="form-control text-uppercase" placeholder="MH04AB1234" onkeyup="searchCab()">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label class="form-label fw-bold">Seater Capacity</label>
                         <select id="seater_capacity" class="form-select">
                             <option value="4-Seater">4-Seater</option>
@@ -151,43 +176,63 @@
                             <option value="Bus / Tempo">Bus / Tempo</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">Driver Name</label>
-                        <input type="text" id="driver_name" class="form-control" placeholder="Driver Full Name">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-bold">Driver Mobile</label>
-                        <input type="text" id="driver_mobile" class="form-control" placeholder="Mobile">
-                    </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <label class="form-label fw-bold">Escort Guard</label>
                         <input type="text" id="guard_name" class="form-control" placeholder="Guard Name">
                     </div>
-                    <div class="col-md-1">
-                        <label class="form-label fw-bold">Pick Time</label>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Pickup Time</label>
                         <input type="time" id="pickup_time" class="form-control">
                     </div>
                 </div>
 
-                <hr>
-                <h6 class="fw-bold text-secondary mb-3">👥 Staff Drop Details (Up to 6 Staff)</h6>
+                <h6 class="fw-bold text-secondary border-bottom pb-2 mt-4">👥 Staff Drop Details (With Sr. No.)</h6>
                 <div id="staffContainer"></div>
 
                 <div class="text-end mt-3">
-                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Entry</button>
+                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Cab Entry</button>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Parking Operations -->
+        <!-- 5. Staff Car & Bike Parking Report -->
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span>📋 4. Parking Operations</span>
-                <div class="d-flex align-items-center gap-2">
-                    <label class="mb-0 text-white small">Search Date:</label>
-                    <input type="date" id="search_date" class="form-control form-control-sm" style="width: auto;" onchange="searchCabLogsByDate()">
-                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareParkingWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Parking_Operations_Report')">📊 Download Excel</button>
+                <span>🅿️ 5. Staff Car & Bike Parking Operations Report</span>
+                <div>
+                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareStaffParkingWhatsApp()">📲 WhatsApp Share</button>
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('staffParkingTable', 'Staff_Parking_Report')">📊 Download Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="staffParkingTable">
+                        <thead class="table-success">
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Date & Time</th>
+                                <th>Type</th>
+                                <th>Vehicle No</th>
+                                <th>Staff Name (ID)</th>
+                                <th>Mobile</th>
+                                <th>Slot No</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffParkingLogsBody">
+                            <tr><td colspan="7" class="text-center text-muted">No staff vehicle logs recorded today.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Cab Drop Logistics Report -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span>🚕 6. Cab Drop Logistics Report</span>
+                <div>
+                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareCabLogisticsWhatsApp()">📲 WhatsApp Share</button>
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Cab_Logistics_Report')">📊 Download Excel</button>
                 </div>
             </div>
             <div class="card-body">
@@ -195,40 +240,29 @@
                     <table class="table table-bordered table-hover" id="cabTable">
                         <thead class="table-success">
                             <tr>
+                                <th>Sr. No.</th>
                                 <th>Date</th>
                                 <th>Cab No</th>
                                 <th>Seater</th>
                                 <th>Driver Details</th>
                                 <th>Guard</th>
                                 <th>Time</th>
-                                <th>Staff Details (Emp ID | Name | Mobile | Drop)</th>
+                                <th>Staff Drop Details</th>
                             </tr>
                         </thead>
                         <tbody id="cabLogsBody">
-                            <tr><td colspan="7" class="text-center text-muted">No entries recorded for selected date.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted">No cab log entries recorded.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- 5. Cab Drop Logistics Operations -->
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span>🚕 5. Cab Drop Logistics Operations</span>
-                <div>
-                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareCabLogisticsWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Cab_Drop_Logistics_Report')">📊 Download Excel</button>
-                </div>
-            </div>
-            <div class="card-body">
-                <p class="text-muted small m-0">This section displays dedicated Cab Logistics entries filtered for drop tracking.</p>
-            </div>
-        </div>
-
     </div>
 
     <script>
+        let staffParkingList = [];
+
         function updateClock() {
             const now = new Date();
             document.getElementById('liveClock').innerText = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' });
@@ -250,7 +284,7 @@
             container.innerHTML += `
                 <div class="staff-box">
                     <div class="row g-2 align-items-center">
-                        <div class="col-md-1"><span class="badge bg-secondary">Staff ${i}</span></div>
+                        <div class="col-md-1"><span class="badge bg-secondary">Sr. ${i}</span></div>
                         <div class="col-md-2"><input type="text" id="emp_id_${i}" class="form-control form-control-sm text-uppercase" placeholder="Emp ID" onkeyup="searchEmp(${i})"></div>
                         <div class="col-md-3"><input type="text" id="emp_name_${i}" class="form-control form-control-sm" placeholder="Staff Name"></div>
                         <div class="col-md-3"><input type="text" id="emp_mob_${i}" class="form-control form-control-sm" placeholder="Mobile"></div>
@@ -273,6 +307,19 @@
             }
         }
 
+        async function searchStaffVehicle() {
+            let vehNo = document.getElementById('staff_vehicle_no').value.trim();
+            if (vehNo.length >= 6) {
+                let res = await fetch('/api/get_emp/' + vehNo);
+                let data = await res.json();
+                if (data.found) {
+                    document.getElementById('staff_id').value = data.id || '';
+                    document.getElementById('staff_name').value = data.name || '';
+                    document.getElementById('staff_mobile').value = data.mobile || '';
+                }
+            }
+        }
+
         async function searchEmp(index) {
             let empId = document.getElementById(`emp_id_${index}`).value.trim();
             if (empId.length >= 3) {
@@ -284,6 +331,60 @@
                     document.getElementById(`emp_loc_${index}`).value = data.location;
                 }
             }
+        }
+
+        function saveStaffParking() {
+            let type = document.getElementById('staff_vehicle_type').value;
+            let vehNo = document.getElementById('staff_vehicle_no').value;
+            let id = document.getElementById('staff_id').value;
+            let name = document.getElementById('staff_name').value;
+            let mob = document.getElementById('staff_mobile').value;
+            let slot = document.getElementById('staff_slot').value;
+
+            if (!vehNo || !name) {
+                alert('Vehicle Number aur Staff Name daalna zaroori hai!');
+                return;
+            }
+
+            staffParkingList.push({
+                time: document.getElementById('time').value,
+                type: type,
+                vehNo: vehNo,
+                name: name,
+                id: id,
+                mob: mob,
+                slot: slot
+            });
+
+            renderStaffParkingTable();
+            alert('Staff Vehicle Parking Saved!');
+            document.getElementById('staff_vehicle_no').value = '';
+            document.getElementById('staff_id').value = '';
+            document.getElementById('staff_name').value = '';
+            document.getElementById('staff_mobile').value = '';
+            document.getElementById('staff_slot').value = '';
+        }
+
+        function renderStaffParkingTable() {
+            let tbody = document.getElementById('staffParkingLogsBody');
+            tbody.innerHTML = '';
+            if (staffParkingList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No staff vehicle logs recorded today.</td></tr>';
+                return;
+            }
+            staffParkingList.forEach((item, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.time}</td>
+                        <td>${item.type}</td>
+                        <td class="fw-bold">${item.vehNo}</td>
+                        <td>${item.name} (${item.id})</td>
+                        <td>${item.mob}</td>
+                        <td>${item.slot}</td>
+                    </tr>
+                `;
+            });
         }
 
         async function submitCabLog() {
@@ -304,7 +405,7 @@
             }
 
             if (!cabNo || staffList.length === 0) {
-                alert('Please enter Cab Number and at least 1 Staff details!');
+                alert('Cab Number aur kam se kam 1 Staff Details bharein!');
                 return;
             }
 
@@ -317,28 +418,22 @@
             let data = await res.json();
             if (data.status === 'success') {
                 renderTable(data.logs);
-                alert("Log Saved Successfully!");
+                alert("Cab Log Saved Successfully!");
                 clearCabForm();
             }
-        }
-
-        async function searchCabLogsByDate() {
-            let searchDate = document.getElementById('search_date').value;
-            let res = await fetch('/api/search_cab_logs?date=' + searchDate);
-            let data = await res.json();
-            renderTable(data.logs);
         }
 
         function renderTable(logs) {
             let tbody = document.getElementById('cabLogsBody');
             tbody.innerHTML = '';
             if (logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No records found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No records found.</td></tr>';
                 return;
             }
-            logs.forEach(l => {
+            logs.forEach((l, index) => {
                 tbody.innerHTML += `
                     <tr>
+                        <td>${index + 1}</td>
                         <td>${l[0]}</td>
                         <td class="fw-bold">${l[1]}</td>
                         <td>${l[2]}</td>
@@ -368,84 +463,12 @@
         function clearAllData() {
             if (confirm("Form Data clear karna hai?")) {
                 clearCabForm();
+                staffParkingList = [];
+                renderStaffParkingTable();
             }
         }
 
-        function syncHiddenTables() {
-            document.getElementById('e_date').innerText = document.getElementById('date').value;
-            document.getElementById('e_time').innerText = document.getElementById('time').value;
-            document.getElementById('e_shift').innerText = document.getElementById('shift').value;
-            document.getElementById('e_onRoll').innerText = document.getElementById('onRoll').value;
-            document.getElementById('e_offRoll').innerText = document.getElementById('offRoll').value;
-            document.getElementById('e_security').innerText = document.getElementById('security').value;
-            document.getElementById('e_hkStaff').innerText = document.getElementById('hkStaff').value;
-            document.getElementById('e_technical').innerText = document.getElementById('technical').value;
-            document.getElementById('e_cafeteria').innerText = document.getElementById('cafeteria').value;
-            document.getElementById('e_total').innerText = document.getElementById('total').value;
-
-            document.getElementById('e_secShift').innerText = document.getElementById('securityShift').value;
-            document.getElementById('e_reception01').innerText = document.getElementById('reception01').value;
-            document.getElementById('e_reception02').innerText = document.getElementById('reception02').value;
-            document.getElementById('e_ptlSecurity').innerText = document.getElementById('ptlSecurity').value;
-            document.getElementById('e_supervisor').innerText = document.getElementById('supervisor').value;
-        }
-
-        function exportExcel(tableId, filename) {
-            syncHiddenTables();
-            let table = document.getElementById(tableId);
-            let rows = table.querySelectorAll("tr");
-            let csv = [];
-            for (let i = 0; i < rows.length; i++) {
-                let row = [], cols = rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
-                csv.push(row.join(","));
-            }
-            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
-            let downloadLink = document.createElement("a");
-            downloadLink.download = `${filename}_${new Date().toISOString().slice(0,10)}.csv`;
-            downloadLink.href = window.URL.createObjectURL(csvFile);
-            downloadLink.click();
-        }
-
-        function exportCombinedReport() {
-            let csv = [];
-            csv.push('"IDFC FIRST BANK - COMBINED MASTER REPORT"');
-            csv.push(`"Date: ${document.getElementById('date').value}","Time: ${document.getElementById('time').value}","Shift: ${document.getElementById('shift').value}"`);
-            csv.push('""');
-            csv.push('"--- SHIFT HEADCOUNT ---"');
-            csv.push(`"On Roll", "${document.getElementById('onRoll').value}"`);
-            csv.push(`"Off Roll", "${document.getElementById('offRoll').value}"`);
-            csv.push(`"Security Duty", "${document.getElementById('security').value}"`);
-            csv.push(`"HK Staff", "${document.getElementById('hkStaff').value}"`);
-            csv.push(`"Technical", "${document.getElementById('technical').value}"`);
-            csv.push(`"Cafeteria", "${document.getElementById('cafeteria').value}"`);
-            csv.push(`"Total Headcount", "${document.getElementById('total').value}"`);
-            csv.push('""');
-            csv.push('"--- SECURITY POSTINGS ---"');
-            csv.push(`"Shift", "${document.getElementById('securityShift').value}"`);
-            csv.push(`"Reception 01", "${document.getElementById('reception01').value}"`);
-            csv.push(`"Reception 02", "${document.getElementById('reception02').value}"`);
-            csv.push(`"PTL Security", "${document.getElementById('ptlSecurity').value}"`);
-            csv.push(`"BMS", "${document.getElementById('supervisor').value}"`);
-            csv.push('""');
-            csv.push('"--- PARKING OPERATIONS ---"');
-            
-            let table = document.getElementById('cabTable');
-            let rows = table.querySelectorAll("tr");
-            for (let i = 0; i < rows.length; i++) {
-                let row = [], cols = rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
-                csv.push(row.join(","));
-            }
-
-            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
-            let downloadLink = document.createElement("a");
-            downloadLink.download = `IDFC_Master_Combined_Report_${new Date().toISOString().slice(0,10)}.csv`;
-            downloadLink.href = window.URL.createObjectURL(csvFile);
-            downloadLink.click();
-        }
-
-        // WhatsApp Share Functions (Same Format & Signature)
+        // WhatsApp Share Functions (Same Clean Format & Signature)
         function shareHeadcountWhatsApp() {
             let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
@@ -479,19 +502,18 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        function shareParkingWhatsApp() {
-            let text = `Parking Operations Report Date:-${document.getElementById('date').value}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                document.getElementById('cabLogsBody').innerText + `\n\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
+        function shareStaffParkingWhatsApp() {
+            let text = `Staff Parking Operations Report Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n`;
+            staffParkingList.forEach((s, idx) => {
+                text += `${idx + 1}] ${s.type}: ${s.vehNo} | ${s.name} | Slot: ${s.slot}\n`;
+            });
+            text += `\nRegards,\nIDFC First bank\nAiroli Gigaplex Building NO-09\n(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function shareCabLogisticsWhatsApp() {
-            let text = `Cab Drop Logistics Report Date:-${document.getElementById('date').value}\n` +
+            let text = `Cab Drop Logistics Details Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
                 document.getElementById('cabLogsBody').innerText + `\n\n` +
                 `Regards,\n` +
@@ -502,19 +524,17 @@
         }
 
         function shareCombinedWhatsApp() {
-            let text = `Master Operations Report Date:-${document.getElementById('date').value}\n` +
+            let text = `Master Operations Details Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
-                `1] Headcount Total:-${document.getElementById('total').value}\n` +
-                `2] BMS:-${document.getElementById('supervisor').value}\n` +
-                `3] PTL Security:-${document.getElementById('ptlSecurity').value}\n\n` +
+                `1] Total Headcount:- ${document.getElementById('total').value}\n` +
+                `2] Shift:- ${document.getElementById('shift').value}\n` +
+                `3] BMS Lead:- ${document.getElementById('supervisor').value}\n\n` +
                 `Regards,\n` +
                 `IDFC First bank\n` +
                 `Airoli Gigaplex Building NO-09\n` +
                 `(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
-
-        searchCabLogsByDate();
     </script>
 </body>
 </html>
