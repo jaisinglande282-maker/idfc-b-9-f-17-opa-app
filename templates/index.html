@@ -3,77 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDFC Operations & Night Cab Dashboard</title>
+    <title>IDFC Operations & Night Cab Management Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card-header { background: #9c0612; color: white; font-weight: bold; }
+        .header-card { background: linear-gradient(135deg, #9c0612, #560209); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: none; }
+        .card-header { background: #9c0612; color: white; font-weight: bold; border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
         .btn-custom { background-color: #9c0612; color: white; }
         .btn-custom:hover { background-color: #78040d; color: white; }
-        .staff-box { background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; margin-bottom: 8px; }
+        .staff-box { background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 8px; margin-bottom: 6px; }
     </style>
 </head>
 <body class="p-3 p-md-4">
     <div class="container-fluid">
-        <!-- General Info & Auto Live Clock Header -->
-        <div class="card mb-4">
-            <div class="card-body d-flex justify-content-between align-items-center bg-white rounded">
+        
+        <!-- Header -->
+        <div class="header-card d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="m-0 fw-bold">IDFC FIRST Bank Operations</h2>
+                <p class="m-0 opacity-75">Airoli Gigaplex Building NO-09 | Daily Operations & Night Cab Facility</p>
+            </div>
+            <div class="text-end">
+                <span id="liveClock" class="badge bg-light text-dark fs-6 p-2">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- Combined Actions Control Bar -->
+        <div class="card p-3 mb-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span class="fw-bold text-danger fs-5">🚀 Global Actions & Export Center</span>
                 <div>
-                    <h4 class="text-danger fw-bold m-0">IDFC Security Operations Dashboard</h4>
-                    <small class="text-muted">Night Cab Facility Management</small>
-                </div>
-                <div class="text-end">
-                    <span id="liveClock" class="badge bg-dark fs-6">--:--:--</span>
+                    <button class="btn btn-outline-danger me-2" onclick="clearAllData()">🗑️ Clear Form Data</button>
+                    <button class="btn btn-dark me-2" onclick="exportCombinedReport()">📊 Download Combined Master Excel</button>
+                    <button class="btn btn-primary" onclick="copyCombinedText()">📋 Copy Combined Summary Text</button>
                 </div>
             </div>
         </div>
 
-        <!-- Night Cab Drop Form -->
-        <div class="card mb-4">
-            <div class="card-header">🌙 Night Cab Drop Facility Entry (1 to 5 Staff Per Cab)</div>
+        <!-- 1. General Info & Shift Headcount -->
+        <div class="card" id="headcountCard">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>📊 1. Shift General Info & Headcount Details</span>
+                <button class="btn btn-sm btn-light" onclick="exportExcel('headcountTable', 'Headcount_Report')">📊 Download Excel</button>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4"><label class="form-label fw-bold">Date</label><input type="text" id="date" class="form-control" readonly></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Time</label><input type="text" id="time" class="form-control" readonly></div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Shift Selection</label>
+                        <select id="shift" class="form-select">
+                            <option value="1st Shift">1st Shift</option>
+                            <option value="2nd Shift">2nd Shift</option>
+                            <option value="3rd Shift">3rd Shift</option>
+                            <option value="General Shift">General Shift</option>
+                            <option value="PTL Shift">PTL Shift</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-2"><label class="form-label fw-bold">On Roll</label><input type="number" id="onRoll" class="form-control" value="461" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Off Roll</label><input type="number" id="offRoll" class="form-control" value="30" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Security Duty</label><input type="number" id="security" class="form-control" value="4" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">HK Staff</label><input type="number" id="hkStaff" class="form-control" value="9" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Technical</label><input type="number" id="technical" class="form-control" value="1" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Cafeteria</label><input type="number" id="cafeteria" class="form-control" value="7" oninput="calcTotal()"></div>
+                    <div class="col-md-12 mt-3">
+                        <label class="form-label fw-bold text-danger">Total Head Count</label>
+                        <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-danger" value="512" readonly>
+                    </div>
+                </div>
+
+                <!-- Hidden Table for Section Excel Export -->
+                <table id="headcountTable" style="display:none;">
+                    <tr><th>Parameter</th><th>Count</th></tr>
+                    <tr><td>Date</td><td id="e_date"></td></tr>
+                    <tr><td>Time</td><td id="e_time"></td></tr>
+                    <tr><td>Shift</td><td id="e_shift"></td></tr>
+                    <tr><td>On Roll</td><td id="e_onRoll"></td></tr>
+                    <tr><td>Off Roll</td><td id="e_offRoll"></td></tr>
+                    <tr><td>Security Duty</td><td id="e_security"></td></tr>
+                    <tr><td>HK Staff</td><td id="e_hkStaff"></td></tr>
+                    <tr><td>Technical</td><td id="e_technical"></td></tr>
+                    <tr><td>Cafeteria</td><td id="e_cafeteria"></td></tr>
+                    <tr><td>Total Head Count</td><td id="e_total"></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. Security Allocations -->
+        <div class="card" id="securityCard">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>🛡️ 2. Security Postings Allocation</span>
+                <button class="btn btn-sm btn-light" onclick="exportExcel('securityTable', 'Security_Postings_Report')">📊 Download Excel</button>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4"><label class="form-label fw-bold">Reception 01</label><input type="text" id="reception01" class="form-control" value="Pooja J."></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Reception 02</label><input type="text" id="reception02" class="form-control" value="Priti P."></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">P-2 Area Security</label><input type="text" id="p2Security" class="form-control" value="Surendra O."></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Reliever Guard</label><input type="text" id="reliever" class="form-control" value="Anil S."></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Shift Supervisor</label><input type="text" id="supervisor" class="form-control" value="Jaising L."></div>
+                </div>
+
+                <!-- Hidden Table for Security Export -->
+                <table id="securityTable" style="display:none;">
+                    <tr><th>Posting Area</th><th>Assigned Personnel</th></tr>
+                    <tr><td>Reception 01</td><td id="e_reception01"></td></tr>
+                    <tr><td>Reception 02</td><td id="e_reception02"></td></tr>
+                    <tr><td>P-2 Area Security</td><td id="e_p2Security"></td></tr>
+                    <tr><td>Reliever Guard</td><td id="e_reliever"></td></tr>
+                    <tr><td>Shift Supervisor</td><td id="e_supervisor"></td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. Night Cab Drop Entry Form (Up to 6 Staff per Cab) -->
+        <div class="card">
+            <div class="card-header">🌙 3. Night Cab Drop Facility (Up to 6 Staff per Cab)</div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Cab Number</label>
                         <input type="text" id="cab_no" class="form-control text-uppercase" placeholder="MH04AB1234" onkeyup="searchCab()">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Seater Capacity</label>
+                        <select id="seater_capacity" class="form-select">
+                            <option value="4-Seater">4-Seater</option>
+                            <option value="6-Seater">6-Seater</option>
+                            <option value="7-Seater">7-Seater</option>
+                            <option value="Bus / Tempo">Bus / Tempo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
                         <label class="form-label fw-bold">Driver Name</label>
                         <input type="text" id="driver_name" class="form-control" placeholder="Driver Full Name">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fw-bold">Driver Mobile</label>
-                        <input type="text" id="driver_mobile" class="form-control" placeholder="10-digit Mobile">
+                        <input type="text" id="driver_mobile" class="form-control" placeholder="Mobile">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Security Guard Name</label>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Escort Guard</label>
                         <input type="text" id="guard_name" class="form-control" placeholder="Guard Name">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Pick-up Time</label>
+                    <div class="col-md-1">
+                        <label class="form-label fw-bold">Pick Time</label>
                         <input type="time" id="pickup_time" class="form-control">
                     </div>
                 </div>
 
                 <hr>
-                <h6 class="fw-bold text-secondary mb-3">👥 Staff Drop Details (Up to 5 Staff)</h6>
-                <div id="staffContainer">
-                    <!-- Dynamic 5 Staff Rows -->
-                </div>
+                <h6 class="fw-bold text-secondary mb-3">👥 Staff Drop Details (Up to 6 Staff per Cab)</h6>
+                <div id="staffContainer"></div>
 
                 <div class="text-end mt-3">
-                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Cab Log & Update Report</button>
+                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Cab Log Entry</button>
                 </div>
             </div>
         </div>
 
-        <!-- Daily Report & Excel Download -->
+        <!-- 4. Night Cab Drop Logs & 1-Month Date Search -->
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>📋 Daily Night Cab Drop Report</span>
-                <div>
-                    <button class="btn btn-light btn-sm me-2" onclick="copyReportText()">📋 Copy Text</button>
-                    <button class="btn btn-success btn-sm" onclick="downloadExcel()">📊 Download Excel (CSV)</button>
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span>📋 4. Night Cab Drop Logs</span>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0 text-white small">Search Date:</label>
+                    <input type="date" id="search_date" class="form-control form-control-sm" style="width: auto;" onchange="searchCabLogsByDate()">
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Night_Cab_Report')">📊 Download Excel</button>
                 </div>
             </div>
             <div class="card-body">
@@ -83,31 +183,42 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Cab No</th>
+                                <th>Seater</th>
                                 <th>Driver Details</th>
                                 <th>Guard</th>
                                 <th>Time</th>
-                                <th>Staff Details (ID | Name | Mobile | Drop)</th>
+                                <th>Staff Details (Emp ID | Name | Mobile | Drop)</th>
                             </tr>
                         </thead>
                         <tbody id="cabLogsBody">
-                            <tr><td colspan="6" class="text-center text-muted">No Cab entries registered today.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted">No Cab entries recorded for selected date.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script>
-        // Live Date Time Engine
-        setInterval(() => {
+        function updateClock() {
             const now = new Date();
             document.getElementById('liveClock').innerText = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' });
-        }, 1000);
+            document.getElementById('date').value = now.toLocaleDateString('en-IN');
+            document.getElementById('time').value = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        // Generate 5 Staff Input Rows
+        function calcTotal() {
+            const fields = ['onRoll', 'offRoll', 'security', 'hkStaff', 'technical', 'cafeteria'];
+            let sum = 0;
+            fields.forEach(f => sum += parseInt(document.getElementById(f).value) || 0);
+            document.getElementById('total').value = sum;
+        }
+
         const container = document.getElementById('staffContainer');
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 6; i++) {
             container.innerHTML += `
                 <div class="staff-box">
                     <div class="row g-2 align-items-center">
@@ -115,13 +226,12 @@
                         <div class="col-md-2"><input type="text" id="emp_id_${i}" class="form-control form-control-sm text-uppercase" placeholder="Emp ID" onkeyup="searchEmp(${i})"></div>
                         <div class="col-md-3"><input type="text" id="emp_name_${i}" class="form-control form-control-sm" placeholder="Staff Name"></div>
                         <div class="col-md-3"><input type="text" id="emp_mob_${i}" class="form-control form-control-sm" placeholder="Mobile"></div>
-                        <div class="col-md-3"><input type="text" id="emp_loc_${i}" class="form-control form-control-sm" placeholder="Drop Place"></div>
+                        <div class="col-md-3"><input type="text" id="emp_loc_${i}" class="form-control form-control-sm" placeholder="Drop Location"></div>
                     </div>
                 </div>
             `;
         }
 
-        // Auto Fetch Cab Driver Details
         async function searchCab() {
             let cabNo = document.getElementById('cab_no').value.trim();
             if (cabNo.length >= 6) {
@@ -130,11 +240,11 @@
                 if (data.found) {
                     document.getElementById('driver_name').value = data.driver_name;
                     document.getElementById('driver_mobile').value = data.driver_mobile;
+                    document.getElementById('seater_capacity').value = data.seater_capacity || '4-Seater';
                 }
             }
         }
 
-        // Auto Fetch Staff Details using Emp ID
         async function searchEmp(index) {
             let empId = document.getElementById(`emp_id_${index}`).value.trim();
             if (empId.length >= 3) {
@@ -148,77 +258,172 @@
             }
         }
 
-        // Submit Entry
         async function submitCabLog() {
             let cabNo = document.getElementById('cab_no').value;
+            let seater = document.getElementById('seater_capacity').value;
             let driverName = document.getElementById('driver_name').value;
             let driverMobile = document.getElementById('driver_mobile').value;
             let guardName = document.getElementById('guard_name').value;
             let pickupTime = document.getElementById('pickup_time').value;
 
             let staffList = [];
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 6; i++) {
                 let id = document.getElementById(`emp_id_${i}`).value;
                 let name = document.getElementById(`emp_name_${i}`).value;
                 let mobile = document.getElementById(`emp_mob_${i}`).value;
                 let location = document.getElementById(`emp_loc_${i}`).value;
-                if (id || name) {
-                    staffList.push({ id, name, mobile, location });
-                }
+                if (id || name) staffList.push({ id, name, mobile, location });
             }
 
             if (!cabNo || staffList.length === 0) {
-                alert('Please enter Cab Number and at least 1 Staff!');
+                alert('Please enter Cab Number and at least 1 Staff details!');
                 return;
             }
 
             let res = await fetch('/api/add_cab_log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cab_no: cabNo, driver_name: driverName, driver_mobile: driverMobile, guard_name: guardName, pickup_time: pickupTime, staff_list: staffList })
+                body: JSON.stringify({ cab_no: cabNo, seater_capacity: seater, driver_name: driverName, driver_mobile: driverMobile, guard_name: guardName, pickup_time: pickupTime, staff_list: staffList })
             });
 
             let data = await res.json();
             if (data.status === 'success') {
                 renderTable(data.logs);
-                alert("Cab Drop Entry Saved Successfully!");
+                alert("Cab Log Saved Successfully!");
+                clearCabForm();
             }
+        }
+
+        async function searchCabLogsByDate() {
+            let searchDate = document.getElementById('search_date').value;
+            let res = await fetch('/api/search_cab_logs?date=' + searchDate);
+            let data = await res.json();
+            renderTable(data.logs);
         }
 
         function renderTable(logs) {
             let tbody = document.getElementById('cabLogsBody');
             tbody.innerHTML = '';
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No records found.</td></tr>';
+                return;
+            }
             logs.forEach(l => {
                 tbody.innerHTML += `
                     <tr>
-                        <td>${l[6]}</td>
-                        <td class="fw-bold">${l[0]}</td>
-                        <td>${l[1]} (${l[2]})</td>
-                        <td>${l[3]}</td>
-                        <td>${l[4]}</td>
+                        <td>${l[0]}</td>
+                        <td class="fw-bold">${l[1]}</td>
+                        <td>${l[2]}</td>
+                        <td>${l[3]} (${l[4]})</td>
                         <td>${l[5]}</td>
+                        <td>${l[6]}</td>
+                        <td>${l[7]}</td>
                     </tr>
                 `;
             });
         }
 
-        // Export Report to Excel (CSV Format)
-        function downloadExcel() {
-            let table = document.getElementById("cabTable");
+        function clearCabForm() {
+            document.getElementById('cab_no').value = '';
+            document.getElementById('driver_name').value = '';
+            document.getElementById('driver_mobile').value = '';
+            document.getElementById('guard_name').value = '';
+            document.getElementById('pickup_time').value = '';
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`emp_id_${i}`).value = '';
+                document.getElementById(`emp_name_${i}`).value = '';
+                document.getElementById(`emp_mob_${i}`).value = '';
+                document.getElementById(`emp_loc_${i}`).value = '';
+            }
+        }
+
+        function clearAllData() {
+            if (confirm("Form Data clear karna hai?")) {
+                clearCabForm();
+            }
+        }
+
+        function syncHiddenTables() {
+            document.getElementById('e_date').innerText = document.getElementById('date').value;
+            document.getElementById('e_time').innerText = document.getElementById('time').value;
+            document.getElementById('e_shift').innerText = document.getElementById('shift').value;
+            document.getElementById('e_onRoll').innerText = document.getElementById('onRoll').value;
+            document.getElementById('e_offRoll').innerText = document.getElementById('offRoll').value;
+            document.getElementById('e_security').innerText = document.getElementById('security').value;
+            document.getElementById('e_hkStaff').innerText = document.getElementById('hkStaff').value;
+            document.getElementById('e_technical').innerText = document.getElementById('technical').value;
+            document.getElementById('e_cafeteria').innerText = document.getElementById('cafeteria').value;
+            document.getElementById('e_total').innerText = document.getElementById('total').value;
+
+            document.getElementById('e_reception01').innerText = document.getElementById('reception01').value;
+            document.getElementById('e_reception02').innerText = document.getElementById('reception02').value;
+            document.getElementById('e_p2Security').innerText = document.getElementById('p2Security').value;
+            document.getElementById('e_reliever').innerText = document.getElementById('reliever').value;
+            document.getElementById('e_supervisor').innerText = document.getElementById('supervisor').value;
+        }
+
+        function exportExcel(tableId, filename) {
+            syncHiddenTables();
+            let table = document.getElementById(tableId);
             let rows = table.querySelectorAll("tr");
             let csv = [];
             for (let i = 0; i < rows.length; i++) {
                 let row = [], cols = rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) 
-                    row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
                 csv.push(row.join(","));
             }
             let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
             let downloadLink = document.createElement("a");
-            downloadLink.download = `Night_Cab_Report_${new Date().toISOString().slice(0,10)}.csv`;
+            downloadLink.download = `${filename}_${new Date().toISOString().slice(0,10)}.csv`;
             downloadLink.href = window.URL.createObjectURL(csvFile);
             downloadLink.click();
         }
+
+        function exportCombinedReport() {
+            let csv = [];
+            csv.push('"IDFC FIRST BANK - COMBINED MASTER REPORT"');
+            csv.push(`"Date: ${document.getElementById('date').value}","Time: ${document.getElementById('time').value}","Shift: ${document.getElementById('shift').value}"`);
+            csv.push('""');
+            csv.push('"--- SHIFT HEADCOUNT ---"');
+            csv.push(`"On Roll", "${document.getElementById('onRoll').value}"`);
+            csv.push(`"Off Roll", "${document.getElementById('offRoll').value}"`);
+            csv.push(`"Security Duty", "${document.getElementById('security').value}"`);
+            csv.push(`"HK Staff", "${document.getElementById('hkStaff').value}"`);
+            csv.push(`"Technical", "${document.getElementById('technical').value}"`);
+            csv.push(`"Cafeteria", "${document.getElementById('cafeteria').value}"`);
+            csv.push(`"Total Headcount", "${document.getElementById('total').value}"`);
+            csv.push('""');
+            csv.push('"--- SECURITY POSTINGS ---"');
+            csv.push(`"Reception 01", "${document.getElementById('reception01').value}"`);
+            csv.push(`"Reception 02", "${document.getElementById('reception02').value}"`);
+            csv.push(`"P-2 Area Security", "${document.getElementById('p2Security').value}"`);
+            csv.push(`"Reliever Guard", "${document.getElementById('reliever').value}"`);
+            csv.push(`"Shift Supervisor", "${document.getElementById('supervisor').value}"`);
+            csv.push('""');
+            csv.push('"--- NIGHT CAB LOGS ---"');
+            
+            let table = document.getElementById('cabTable');
+            let rows = table.querySelectorAll("tr");
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText.replace(/"/g, '""') + '"');
+                csv.push(row.join(","));
+            }
+
+            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+            let downloadLink = document.createElement("a");
+            downloadLink.download = `IDFC_Master_Combined_Report_${new Date().toISOString().slice(0,10)}.csv`;
+            downloadLink.href = window.URL.createObjectURL(csvFile);
+            downloadLink.click();
+        }
+
+        function copyCombinedText() {
+            let text = `*IDFC FIRST BANK MASTER OPERATIONS REPORT*\nDate: ${document.getElementById('date').value} | Time: ${document.getElementById('time').value} | Shift: ${document.getElementById('shift').value}\n\n*HEADCOUNT DETAILS*\nTotal: ${document.getElementById('total').value} (On Roll: ${document.getElementById('onRoll').value}, Off Roll: ${document.getElementById('offRoll').value}, Security: ${document.getElementById('security').value})\n\n*POSTINGS*\nSupervisor: ${document.getElementById('supervisor').value} | Reliever: ${document.getElementById('reliever').value}\n\n*NIGHT CAB LOGS*\n` + document.getElementById('cabLogsBody').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Combined Report Copied!");
+        }
+
+        searchCabLogsByDate();
     </script>
 </body>
 </html>
