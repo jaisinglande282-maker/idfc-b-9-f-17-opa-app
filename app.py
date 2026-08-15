@@ -1,10 +1,187 @@
-from flask import Flask, render_template
+import sqlite3
+from datetime import datetime
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return render_template('index.html')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+def init_db():
+    conn = sqlite3.connect("operations.db")
+    cursor = conn.cursor()
+
+    # Employee Master Database
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS emp_master (
+            emp_id TEXT PRIMARY KEY,
+            emp_name TEXT,
+            emp_mobile TEXT,
+            drop_location TEXT
+        )
+    """
+    )
+
+    # Cab Driver Master Database
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS cab_master (
+            cab_no TEXT PRIMARY KEY,
+            driver_name TEXT,
+            driver_mobile TEXT
+        )
+    """
+    )
+
+    # Daily Night Cab Drop Logs
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS cab_drop_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cab_no TEXT,
+            driver_name TEXT,
+            driver_mobile TEXT,
+            guard_name TEXT,
+            pickup_time TEXT,
+            staff_details TEXT,
+            date_added TEXT
+        )
+    """
+    )
+
+    conn.commit()
+    conn.close()
+
+
+init_db()
+
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+# Auto-Fetch Employee Details
+@app.route("/api/get_emp/<emp_id>", methods=["GET"])
+def get_emp(emp_id):
+    conn = sqlite3.connect("operations.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT emp_name, emp_mobile, drop_location FROM emp_master WHERE emp_id = ?",
+        (emp_id.upper().strip(),),
+    )
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        return jsonify(
+            {
+                "found": True,
+                "name": row[0],
+                "mobile": row[1],
+                "location": row[2],
+            }
+        )
+    return jsonify({"found": False})
+
+
+# Auto-Fetch Cab Driver Details
+@app.route("/api/get_cab/<cab_no>", methods=["GET"])
+def get_cab(cab_no):
+    conn = sqlite3.connect("operations.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT driver_name, driver_mobile FROM cab_master WHERE cab_no = ?",
+        (cab_no.upper().strip(),),
+    )
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        return jsonify(
+            {"found": True, "driver_name": row[0], "driver_mobile": row[1]}
+        )
+    return jsonify({"found": False})
+
+
+# Save Night Cab Entry
+@app.route("/api/add_cab_log", methods=["POST"])
+def add_cab_log():
+    data = request.json
+    cab_no = data.get("cab_no", "").upper().strip()
+    driver_name = data.get("driver_name", "").strip()
+    driver_mobile = data.get("driver_mobile", "").strip()
+    guard_name = data.get("guard_name", "").strip()
+    pickup_time = data.get("pickup_time", "").strip()
+    staff_list = data.get("staff_list", [])
+    today_date = datetime.now().strftime("%Y-%m-%d")
+
+    conn = sqlite3.connect("operations.db")
+    cursor = conn.cursor()
+
+    # Save/Update Cab Master
+    cursor.execute(
+        """
+        INSERT INTO cab_master (cab_no, driver_name, driver_mobile)
+        VALUES (?, ?, ?)
+        ON CONFLICT(cab_no) DO UPDATE SET driver_name=?, driver_mobile=?
+    """,
+        (cab_no, driver_name, driver_mobile, driver_name, driver_mobile),
+    )
+
+    # Save/Update Employee Master for each staff
+    for emp in staff_list:
+        if emp.get("id"):
+            cursor.execute(
+                """
+                INSERT INTO emp_master (emp_id, emp_name, emp_mobile, drop_location)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(emp_id) DO UPDATE SET emp_name=?, emp_mobile=?, drop_location=?
+            """,
+                (
+                    emp["id"].upper().strip(),
+                    emp["name"],
+                    emp["mobile"],
+                    emp["location"],
+                    emp["name"],
+                    emp["mobile"],
+                    emp["location"],
+                ),
+            )
+
+    staff_str = " | ".join(
+        [
+            f"[{e['id']}] {e['name']} ({e['mobile']}) -> {e['location']}"
+            for e in staff_list
+            if e.get("id")
+        ]
+    )
+
+    # Save Log
+    cursor.execute(
+        """
+        INSERT INTO cab_drop_logs (cab_no, driver_name, driver_mobile, guard_name, pickup_time, staff_details, date_added)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """,
+        (
+            cab_no,
+            driver_name,
+            driver_mobile,
+            guard_name,
+            pickup_time,
+            staff_str,
+            today_date,
+        ),
+    )
+
+    conn.commit()
+
+    # Fetch daily logs
+    cursor.execute(
+        "SELECT cab_no, driver_name, driver_mobile, guard_name, pickup_time, staff_details, date_added FROM cab_drop_logs ORDER BY id DESC"
+    )
+    logs = cursor.fetchall()
+    conn.close()
+
+    return jsonify({"status": "success", "logs": logs})
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
