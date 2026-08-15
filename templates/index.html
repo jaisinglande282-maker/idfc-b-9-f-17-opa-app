@@ -469,22 +469,22 @@
         }
 
         // WhatsApp Share Functions (Same Clean Format & Signature)
-        function shareHeadcountWhatsApp() {
-            let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                `1] On roll Employee:-${document.getElementById('onRoll').value}\n` +
-                `2] Off roll Employee:-${document.getElementById('offRoll').value}\n` +
-                `3] Security duty on:-${document.getElementById('security').value}\n` +
-                `4] H K staff on duty:-${document.getElementById('hkStaff').value}\n` +
-                `5] Technical staff:-${document.getElementById('technical').value}\n` +
-                `6] Cafeteria staff:-${document.getElementById('cafeteria').value}\n` +
-                `Total head count:-${document.getElementById('total').value}\n\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
+       function shareHeadcountWhatsApp() {
+    let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
+        `Airoli Gigaplex Building NO-09\n\n` +
+        `1] On roll Employee:-${document.getElementById('onRoll').value}\n` +
+        `2] Off roll Employee:-${document.getElementById('offRoll').value}\n` +
+        `3] Security duty on:-${document.getElementById('security').value}\n` +
+        `4] H K staff on duty:-${document.getElementById('hkStaff').value}\n` +
+        `5] Technical staff:-${document.getElementById('technical').value}\n` +
+        `6] Cafeteria staff:-${document.getElementById('cafeteria').value}\n` +
+        `Total head count:-${document.getElementById('total').value}\n\n` +
+        `Regards,\n` +
+        `IDFC First bank\n` +
+        `Airoli Gigaplex Building NO-09\n` +
+        `(Jaysing lande)`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+}
 
         function shareSecurityWhatsApp() {
             let secShift = document.getElementById('securityShift').value;
