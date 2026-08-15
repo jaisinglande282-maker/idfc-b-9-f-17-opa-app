@@ -69,15 +69,15 @@
                 </div>
 
                 <div class="row g-3">
-                    <div class="col-md-2"><label class="form-label fw-bold">On Roll</label><input type="number" id="onRoll" class="form-control" value="461" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Off Roll</label><input type="number" id="offRoll" class="form-control" value="30" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Security Duty</label><input type="number" id="security" class="form-control" value="4" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">HK Staff</label><input type="number" id="hkStaff" class="form-control" value="9" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Technical</label><input type="number" id="technical" class="form-control" value="1" oninput="calcTotal()"></div>
-                    <div class="col-md-2"><label class="form-label fw-bold">Cafeteria</label><input type="number" id="cafeteria" class="form-control" value="7" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">On Roll</label><input type="number" id="onRoll" class="form-control" value="465" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Off Roll</label><input type="number" id="offRoll" class="form-control" value="29" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Security Duty</label><input type="number" id="security" class="form-control" value="5" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">HK Staff</label><input type="number" id="hkStaff" class="form-control" value="10" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Technical</label><input type="number" id="technical" class="form-control" value="2" oninput="calcTotal()"></div>
+                    <div class="col-md-2"><label class="form-label fw-bold">Cafeteria</label><input type="number" id="cafeteria" class="form-control" value="5" oninput="calcTotal()"></div>
                     <div class="col-md-12 mt-3">
                         <label class="form-label fw-bold text-success">Total Head Count</label>
-                        <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-success" value="512" readonly>
+                        <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-success" value="516" readonly>
                     </div>
                 </div>
 
@@ -110,18 +110,18 @@
                 <div class="row g-3">
                     <div class="col-md-4"><label class="form-label fw-bold">Reception 01</label><input type="text" id="reception01" class="form-control" value="Pooja J."></div>
                     <div class="col-md-4"><label class="form-label fw-bold">Reception 02</label><input type="text" id="reception02" class="form-control" value="Priti P."></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">P-2 Area Security</label><input type="text" id="p2Security" class="form-control" value="Surendra O."></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">PTL Security</label><input type="text" id="ptlSecurity" class="form-control" value="Surendra O."></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Reliever Guard</label><input type="text" id="reliever" class="form-control" value="Anil S."></div>
-                    <div class="col-md-6"><label class="form-label fw-bold">Shift Supervisor</label><input type="text" id="supervisor" class="form-control" value="Jaising L."></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">BMS</label><input type="text" id="supervisor" class="form-control" value="Jaysing Lande"></div>
                 </div>
 
                 <table id="securityTable" style="display:none;">
                     <tr><th>Posting Area</th><th>Assigned Personnel</th></tr>
                     <tr><td>Reception 01</td><td id="e_reception01"></td></tr>
                     <tr><td>Reception 02</td><td id="e_reception02"></td></tr>
-                    <tr><td>P-2 Area Security</td><td id="e_p2Security"></td></tr>
+                    <tr><td>PTL Security</td><td id="e_ptlSecurity"></td></tr>
                     <tr><td>Reliever Guard</td><td id="e_reliever"></td></tr>
-                    <tr><td>Shift Supervisor</td><td id="e_supervisor"></td></tr>
+                    <tr><td>BMS</td><td id="e_supervisor"></td></tr>
                 </table>
             </div>
         </div>
@@ -172,15 +172,15 @@
             </div>
         </div>
 
-        <!-- 4. Parking & Cab Logistics Operations -->
+        <!-- 4. Parking Operations -->
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span>📋 4. Parking & Cab Logistics Operations</span>
+                <span>📋 4. Parking Operations</span>
                 <div class="d-flex align-items-center gap-2">
                     <label class="mb-0 text-white small">Search Date:</label>
                     <input type="date" id="search_date" class="form-control form-control-sm" style="width: auto;" onchange="searchCabLogsByDate()">
                     <button class="btn btn-sm btn-whatsapp me-2" onclick="shareParkingWhatsApp()">📲 WhatsApp Share</button>
-                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Parking_Cab_Logistics_Report')">📊 Download Excel</button>
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Parking_Operations_Report')">📊 Download Excel</button>
                 </div>
             </div>
             <div class="card-body">
@@ -202,6 +202,20 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- 5. Cab Drop Logistics Operations -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <span>🚕 5. Cab Drop Logistics Operations</span>
+                <div>
+                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareCabLogisticsWhatsApp()">📲 WhatsApp Share</button>
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Cab_Drop_Logistics_Report')">📊 Download Excel</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small m-0">This section displays dedicated Cab Logistics entries filtered for drop tracking.</p>
             </div>
         </div>
 
@@ -364,7 +378,7 @@
 
             document.getElementById('e_reception01').innerText = document.getElementById('reception01').value;
             document.getElementById('e_reception02').innerText = document.getElementById('reception02').value;
-            document.getElementById('e_p2Security').innerText = document.getElementById('p2Security').value;
+            document.getElementById('e_ptlSecurity').innerText = document.getElementById('ptlSecurity').value;
             document.getElementById('e_reliever').innerText = document.getElementById('reliever').value;
             document.getElementById('e_supervisor').innerText = document.getElementById('supervisor').value;
         }
@@ -403,11 +417,11 @@
             csv.push('"--- SECURITY POSTINGS ---"');
             csv.push(`"Reception 01", "${document.getElementById('reception01').value}"`);
             csv.push(`"Reception 02", "${document.getElementById('reception02').value}"`);
-            csv.push(`"P-2 Area Security", "${document.getElementById('p2Security').value}"`);
+            csv.push(`"PTL Security", "${document.getElementById('ptlSecurity').value}"`);
             csv.push(`"Reliever Guard", "${document.getElementById('reliever').value}"`);
-            csv.push(`"Shift Supervisor", "${document.getElementById('supervisor').value}"`);
+            csv.push(`"BMS", "${document.getElementById('supervisor').value}"`);
             csv.push('""');
-            csv.push('"--- PARKING & CAB LOGISTICS OPERATIONS ---"');
+            csv.push('"--- PARKING OPERATIONS ---"');
             
             let table = document.getElementById('cabTable');
             let rows = table.querySelectorAll("tr");
@@ -424,44 +438,71 @@
             downloadLink.click();
         }
 
-        // WhatsApp Share Functions for Individual Reports
+        // WhatsApp Share Functions (Clean Sample Format)
         function shareHeadcountWhatsApp() {
-            let text = `*IDFC FIRST BANK - SHIFT HEADCOUNT REPORT*\n` +
-                `Date: ${document.getElementById('date').value} | Time: ${document.getElementById('time').value} | Shift: ${document.getElementById('shift').value}\n\n` +
-                `• On Roll: ${document.getElementById('onRoll').value}\n` +
-                `• Off Roll: ${document.getElementById('offRoll').value}\n` +
-                `• Security Duty: ${document.getElementById('security').value}\n` +
-                `• HK Staff: ${document.getElementById('hkStaff').value}\n` +
-                `• Technical: ${document.getElementById('technical').value}\n` +
-                `• Cafeteria: ${document.getElementById('cafeteria').value}\n` +
-                `*Total Headcount: ${document.getElementById('total').value}*`;
+            let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n` +
+                `1] On roll Employee:-${document.getElementById('onRoll').value}\n` +
+                `2] Off roll Employee:-${document.getElementById('offRoll').value}\n` +
+                `3] Security duty on:-${document.getElementById('security').value}\n` +
+                `4] H K staff on duty:-${document.getElementById('hkStaff').value}\n` +
+                `5] Technical staff:-${document.getElementById('technical').value}\n` +
+                `6] Cafeteria staff:-${document.getElementById('cafeteria').value}\n` +
+                `Total head count:-${document.getElementById('total').value}\n\n` +
+                `Regards,\n` +
+                `IDFC First bank\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function shareSecurityWhatsApp() {
-            let text = `*IDFC FIRST BANK - SECURITY POSTINGS ALLOCATION*\n` +
-                `Date: ${document.getElementById('date').value} | Shift: ${document.getElementById('shift').value}\n\n` +
-                `• Reception 01: ${document.getElementById('reception01').value}\n` +
-                `• Reception 02: ${document.getElementById('reception02').value}\n` +
-                `• P-2 Area Security: ${document.getElementById('p2Security').value}\n` +
-                `• Reliever Guard: ${document.getElementById('reliever').value}\n` +
-                `• Shift Supervisor: ${document.getElementById('supervisor').value}`;
+            let text = `Security Postings Details Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n` +
+                `1] Reception 01:-${document.getElementById('reception01').value}\n` +
+                `2] Reception 02:-${document.getElementById('reception02').value}\n` +
+                `3] PTL Security:-${document.getElementById('ptlSecurity').value}\n` +
+                `4] Reliever Guard:-${document.getElementById('reliever').value}\n` +
+                `5] BMS:-${document.getElementById('supervisor').value}\n\n` +
+                `Regards,\n` +
+                `IDFC First bank\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function shareParkingWhatsApp() {
-            let text = `*IDFC FIRST BANK - PARKING & CAB LOGISTICS REPORT*\n` +
-                `Date: ${document.getElementById('date').value}\n\n` +
-                document.getElementById('cabLogsBody').innerText;
+            let text = `Parking Operations Details Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n` +
+                document.getElementById('cabLogsBody').innerText + `\n\n` +
+                `Regards,\n` +
+                `IDFC First bank\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `(Jaysing lande)`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareCabLogisticsWhatsApp() {
+            let text = `Cab Drop Logistics Details Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n` +
+                document.getElementById('cabLogsBody').innerText + `\n\n` +
+                `Regards,\n` +
+                `IDFC First bank\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function shareCombinedWhatsApp() {
-            let text = `*IDFC FIRST BANK - MASTER OPERATIONS REPORT*\n` +
-                `Date: ${document.getElementById('date').value} | Time: ${document.getElementById('time').value} | Shift: ${document.getElementById('shift').value}\n\n` +
-                `*HEADCOUNT:* Total ${document.getElementById('total').value} (On Roll: ${document.getElementById('onRoll').value}, Security: ${document.getElementById('security').value})\n` +
-                `*SECURITY:* Supervisor: ${document.getElementById('supervisor').value} | Reliever: ${document.getElementById('reliever').value}\n\n` +
-                `*PARKING & CAB LOGISTICS LOGS:*\n` + document.getElementById('cabLogsBody').innerText;
+            let text = `Master Operations Details Date:-${document.getElementById('date').value}\n` +
+                `Airoli Gigaplex Building NO-09\n\n` +
+                `1] Headcount Total:-${document.getElementById('total').value}\n` +
+                `2] BMS:-${document.getElementById('supervisor').value}\n` +
+                `3] PTL Security:-${document.getElementById('ptlSecurity').value}\n\n` +
+                `Regards,\n` +
+                `IDFC First bank\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `(Jaysing lande)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
