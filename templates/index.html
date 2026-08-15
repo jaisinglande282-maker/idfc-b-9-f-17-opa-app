@@ -108,19 +108,26 @@
             </div>
             <div class="card-body">
                 <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Select Shift</label>
+                        <select id="securityShift" class="form-select">
+                            <option value="1st Shift">1st Shift</option>
+                            <option value="2nd Shift">2nd Shift</option>
+                            <option value="3rd Shift">3rd Shift</option>
+                        </select>
+                    </div>
                     <div class="col-md-4"><label class="form-label fw-bold">Reception 01</label><input type="text" id="reception01" class="form-control" value="Pooja J."></div>
                     <div class="col-md-4"><label class="form-label fw-bold">Reception 02</label><input type="text" id="reception02" class="form-control" value="Priti P."></div>
-                    <div class="col-md-4"><label class="form-label fw-bold">PTL Security</label><input type="text" id="ptlSecurity" class="form-control" value="Surendra O."></div>
-                    <div class="col-md-6"><label class="form-label fw-bold">Reliever Guard</label><input type="text" id="reliever" class="form-control" value="Anil S."></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">PTL Security</label><input type="text" id="ptlSecurity" class="form-control" value="Surendra O."></div>
                     <div class="col-md-6"><label class="form-label fw-bold">BMS</label><input type="text" id="supervisor" class="form-control" value="Jaysing Lande"></div>
                 </div>
 
                 <table id="securityTable" style="display:none;">
                     <tr><th>Posting Area</th><th>Assigned Personnel</th></tr>
+                    <tr><td>Shift</td><td id="e_secShift"></td></tr>
                     <tr><td>Reception 01</td><td id="e_reception01"></td></tr>
                     <tr><td>Reception 02</td><td id="e_reception02"></td></tr>
                     <tr><td>PTL Security</td><td id="e_ptlSecurity"></td></tr>
-                    <tr><td>Reliever Guard</td><td id="e_reliever"></td></tr>
                     <tr><td>BMS</td><td id="e_supervisor"></td></tr>
                 </table>
             </div>
@@ -376,10 +383,10 @@
             document.getElementById('e_cafeteria').innerText = document.getElementById('cafeteria').value;
             document.getElementById('e_total').innerText = document.getElementById('total').value;
 
+            document.getElementById('e_secShift').innerText = document.getElementById('securityShift').value;
             document.getElementById('e_reception01').innerText = document.getElementById('reception01').value;
             document.getElementById('e_reception02').innerText = document.getElementById('reception02').value;
             document.getElementById('e_ptlSecurity').innerText = document.getElementById('ptlSecurity').value;
-            document.getElementById('e_reliever').innerText = document.getElementById('reliever').value;
             document.getElementById('e_supervisor').innerText = document.getElementById('supervisor').value;
         }
 
@@ -415,10 +422,10 @@
             csv.push(`"Total Headcount", "${document.getElementById('total').value}"`);
             csv.push('""');
             csv.push('"--- SECURITY POSTINGS ---"');
+            csv.push(`"Shift", "${document.getElementById('securityShift').value}"`);
             csv.push(`"Reception 01", "${document.getElementById('reception01').value}"`);
             csv.push(`"Reception 02", "${document.getElementById('reception02').value}"`);
             csv.push(`"PTL Security", "${document.getElementById('ptlSecurity').value}"`);
-            csv.push(`"Reliever Guard", "${document.getElementById('reliever').value}"`);
             csv.push(`"BMS", "${document.getElementById('supervisor').value}"`);
             csv.push('""');
             csv.push('"--- PARKING OPERATIONS ---"');
@@ -438,7 +445,7 @@
             downloadLink.click();
         }
 
-        // WhatsApp Share Functions (Clean Sample Format)
+        // WhatsApp Share Functions (Same Format & Signature)
         function shareHeadcountWhatsApp() {
             let text = `Headcount Details Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
@@ -457,13 +464,14 @@
         }
 
         function shareSecurityWhatsApp() {
+            let secShift = document.getElementById('securityShift').value;
             let text = `Security Postings Details Date:-${document.getElementById('date').value}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
+                `Airoli Gigaplex Building NO-09\n` +
+                `Shift:- ${secShift}\n\n` +
                 `1] Reception 01:-${document.getElementById('reception01').value}\n` +
                 `2] Reception 02:-${document.getElementById('reception02').value}\n` +
                 `3] PTL Security:-${document.getElementById('ptlSecurity').value}\n` +
-                `4] Reliever Guard:-${document.getElementById('reliever').value}\n` +
-                `5] BMS:-${document.getElementById('supervisor').value}\n\n` +
+                `4] BMS:-${document.getElementById('supervisor').value}\n\n` +
                 `Regards,\n` +
                 `IDFC First bank\n` +
                 `Airoli Gigaplex Building NO-09\n` +
@@ -472,7 +480,7 @@
         }
 
         function shareParkingWhatsApp() {
-            let text = `Parking Operations Details Date:-${document.getElementById('date').value}\n` +
+            let text = `Parking Operations Report Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
                 document.getElementById('cabLogsBody').innerText + `\n\n` +
                 `Regards,\n` +
@@ -483,7 +491,7 @@
         }
 
         function shareCabLogisticsWhatsApp() {
-            let text = `Cab Drop Logistics Details Date:-${document.getElementById('date').value}\n` +
+            let text = `Cab Drop Logistics Report Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
                 document.getElementById('cabLogsBody').innerText + `\n\n` +
                 `Regards,\n` +
@@ -494,7 +502,7 @@
         }
 
         function shareCombinedWhatsApp() {
-            let text = `Master Operations Details Date:-${document.getElementById('date').value}\n` +
+            let text = `Master Operations Report Date:-${document.getElementById('date').value}\n` +
                 `Airoli Gigaplex Building NO-09\n\n` +
                 `1] Headcount Total:-${document.getElementById('total').value}\n` +
                 `2] BMS:-${document.getElementById('supervisor').value}\n` +
