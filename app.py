@@ -9,7 +9,7 @@ def init_db():
     conn = sqlite3.connect("operations.db")
     cursor = conn.cursor()
 
-    # Employee Master Database
+    # Master Tables
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS emp_master (
@@ -20,8 +20,6 @@ def init_db():
         )
     """
     )
-
-    # Cab Driver Master Database
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS cab_master (
@@ -31,8 +29,6 @@ def init_db():
         )
     """
     )
-
-    # Daily Night Cab Drop Logs
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS cab_drop_logs (
@@ -47,7 +43,6 @@ def init_db():
         )
     """
     )
-
     conn.commit()
     conn.close()
 
@@ -60,7 +55,6 @@ def home():
     return render_template("index.html")
 
 
-# Auto-Fetch Employee Details
 @app.route("/api/get_emp/<emp_id>", methods=["GET"])
 def get_emp(emp_id):
     conn = sqlite3.connect("operations.db")
@@ -83,7 +77,6 @@ def get_emp(emp_id):
     return jsonify({"found": False})
 
 
-# Auto-Fetch Cab Driver Details
 @app.route("/api/get_cab/<cab_no>", methods=["GET"])
 def get_cab(cab_no):
     conn = sqlite3.connect("operations.db")
@@ -101,7 +94,6 @@ def get_cab(cab_no):
     return jsonify({"found": False})
 
 
-# Save Night Cab Entry
 @app.route("/api/add_cab_log", methods=["POST"])
 def add_cab_log():
     data = request.json
@@ -116,7 +108,6 @@ def add_cab_log():
     conn = sqlite3.connect("operations.db")
     cursor = conn.cursor()
 
-    # Save/Update Cab Master
     cursor.execute(
         """
         INSERT INTO cab_master (cab_no, driver_name, driver_mobile)
@@ -126,7 +117,6 @@ def add_cab_log():
         (cab_no, driver_name, driver_mobile, driver_name, driver_mobile),
     )
 
-    # Save/Update Employee Master for each staff
     for emp in staff_list:
         if emp.get("id"):
             cursor.execute(
@@ -154,7 +144,6 @@ def add_cab_log():
         ]
     )
 
-    # Save Log
     cursor.execute(
         """
         INSERT INTO cab_drop_logs (cab_no, driver_name, driver_mobile, guard_name, pickup_time, staff_details, date_added)
@@ -170,10 +159,8 @@ def add_cab_log():
             today_date,
         ),
     )
-
     conn.commit()
 
-    # Fetch daily logs
     cursor.execute(
         "SELECT cab_no, driver_name, driver_mobile, guard_name, pickup_time, staff_details, date_added FROM cab_drop_logs ORDER BY id DESC"
     )
