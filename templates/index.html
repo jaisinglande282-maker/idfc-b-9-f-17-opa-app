@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDFC Operations & Night Cab Management Dashboard</title>
+    <title>IDFC Operations & Parking Management Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header-card { background: linear-gradient(135deg, #9c0612, #560209); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        body { background-color: #f2f9f4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .header-card { background: linear-gradient(135deg, #1b4332, #2d6a4f); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; border: none; }
-        .card-header { background: #9c0612; color: white; font-weight: bold; border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
-        .btn-custom { background-color: #9c0612; color: white; }
-        .btn-custom:hover { background-color: #78040d; color: white; }
-        .staff-box { background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 8px; margin-bottom: 6px; }
+        .card-header { background: #2d6a4f; color: white; font-weight: bold; border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
+        .btn-custom { background-color: #2d6a4f; color: white; }
+        .btn-custom:hover { background-color: #1b4332; color: white; }
+        .btn-whatsapp { background-color: #25D366; color: white; font-weight: bold; }
+        .btn-whatsapp:hover { background-color: #1ebc57; color: white; }
+        .staff-box { background: #ffffff; border: 1px solid #c8e6c9; border-radius: 8px; padding: 8px; margin-bottom: 6px; }
     </style>
 </head>
 <body class="p-3 p-md-4">
@@ -22,21 +24,21 @@
         <div class="header-card d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="m-0 fw-bold">IDFC FIRST Bank Operations</h2>
-                <p class="m-0 opacity-75">Airoli Gigaplex Building NO-09 | Daily Operations & Night Cab Facility</p>
+                <p class="m-0 opacity-75">Airoli Gigaplex Building NO-09 | Daily Operations & Parking Logistics</p>
             </div>
             <div class="text-end">
                 <span id="liveClock" class="badge bg-light text-dark fs-6 p-2">--:--:--</span>
             </div>
         </div>
 
-        <!-- Combined Actions Control Bar -->
-        <div class="card p-3 mb-4 bg-white">
+        <!-- Global Control Bar -->
+        <div class="card p-3 mb-4 bg-white border-start border-4 border-success">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="fw-bold text-danger fs-5">🚀 Global Actions & Export Center</span>
+                <span class="fw-bold text-success fs-5">⚡ Master Actions & Global Export</span>
                 <div>
                     <button class="btn btn-outline-danger me-2" onclick="clearAllData()">🗑️ Clear Form Data</button>
-                    <button class="btn btn-dark me-2" onclick="exportCombinedReport()">📊 Download Combined Master Excel</button>
-                    <button class="btn btn-primary" onclick="copyCombinedText()">📋 Copy Combined Summary Text</button>
+                    <button class="btn btn-success me-2" onclick="exportCombinedReport()">📊 Download Combined Master Excel</button>
+                    <button class="btn btn-whatsapp" onclick="shareCombinedWhatsApp()">📲 Share Combined Report on WhatsApp</button>
                 </div>
             </div>
         </div>
@@ -45,7 +47,10 @@
         <div class="card" id="headcountCard">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span>📊 1. Shift General Info & Headcount Details</span>
-                <button class="btn btn-sm btn-light" onclick="exportExcel('headcountTable', 'Headcount_Report')">📊 Download Excel</button>
+                <div>
+                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareHeadcountWhatsApp()">📲 WhatsApp Share</button>
+                    <button class="btn btn-sm btn-light" onclick="exportExcel('headcountTable', 'Headcount_Report')">📊 Download Excel</button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row g-3 mb-3">
@@ -71,12 +76,11 @@
                     <div class="col-md-2"><label class="form-label fw-bold">Technical</label><input type="number" id="technical" class="form-control" value="1" oninput="calcTotal()"></div>
                     <div class="col-md-2"><label class="form-label fw-bold">Cafeteria</label><input type="number" id="cafeteria" class="form-control" value="7" oninput="calcTotal()"></div>
                     <div class="col-md-12 mt-3">
-                        <label class="form-label fw-bold text-danger">Total Head Count</label>
-                        <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-danger" value="512" readonly>
+                        <label class="form-label fw-bold text-success">Total Head Count</label>
+                        <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-success" value="512" readonly>
                     </div>
                 </div>
 
-                <!-- Hidden Table for Section Excel Export -->
                 <table id="headcountTable" style="display:none;">
                     <tr><th>Parameter</th><th>Count</th></tr>
                     <tr><td>Date</td><td id="e_date"></td></tr>
@@ -97,7 +101,10 @@
         <div class="card" id="securityCard">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span>🛡️ 2. Security Postings Allocation</span>
-                <button class="btn btn-sm btn-light" onclick="exportExcel('securityTable', 'Security_Postings_Report')">📊 Download Excel</button>
+                <div>
+                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareSecurityWhatsApp()">📲 WhatsApp Share</button>
+                    <button class="btn btn-sm btn-light" onclick="exportExcel('securityTable', 'Security_Postings_Report')">📊 Download Excel</button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row g-3">
@@ -108,7 +115,6 @@
                     <div class="col-md-6"><label class="form-label fw-bold">Shift Supervisor</label><input type="text" id="supervisor" class="form-control" value="Jaising L."></div>
                 </div>
 
-                <!-- Hidden Table for Security Export -->
                 <table id="securityTable" style="display:none;">
                     <tr><th>Posting Area</th><th>Assigned Personnel</th></tr>
                     <tr><td>Reception 01</td><td id="e_reception01"></td></tr>
@@ -120,9 +126,9 @@
             </div>
         </div>
 
-        <!-- 3. Night Cab Drop Entry Form (Up to 6 Staff per Cab) -->
+        <!-- 3. Cab & Vehicle Entry Form -->
         <div class="card">
-            <div class="card-header">🌙 3. Night Cab Drop Facility (Up to 6 Staff per Cab)</div>
+            <div class="card-header">🚗 3. Parking & Cab Entry Form (Up to 6 Staff per Cab)</div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-3">
@@ -157,29 +163,30 @@
                 </div>
 
                 <hr>
-                <h6 class="fw-bold text-secondary mb-3">👥 Staff Drop Details (Up to 6 Staff per Cab)</h6>
+                <h6 class="fw-bold text-secondary mb-3">👥 Staff Drop Details (Up to 6 Staff)</h6>
                 <div id="staffContainer"></div>
 
                 <div class="text-end mt-3">
-                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Cab Log Entry</button>
+                    <button class="btn btn-custom px-4" onclick="submitCabLog()">💾 Save Entry</button>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Night Cab Drop Logs & 1-Month Date Search -->
+        <!-- 4. Parking & Cab Logistics Operations -->
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span>📋 4. Night Cab Drop Logs</span>
+                <span>📋 4. Parking & Cab Logistics Operations</span>
                 <div class="d-flex align-items-center gap-2">
                     <label class="mb-0 text-white small">Search Date:</label>
                     <input type="date" id="search_date" class="form-control form-control-sm" style="width: auto;" onchange="searchCabLogsByDate()">
-                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Night_Cab_Report')">📊 Download Excel</button>
+                    <button class="btn btn-sm btn-whatsapp me-2" onclick="shareParkingWhatsApp()">📲 WhatsApp Share</button>
+                    <button class="btn btn-light btn-sm" onclick="exportExcel('cabTable', 'Parking_Cab_Logistics_Report')">📊 Download Excel</button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover" id="cabTable">
-                        <thead class="table-dark">
+                        <thead class="table-success">
                             <tr>
                                 <th>Date</th>
                                 <th>Cab No</th>
@@ -191,7 +198,7 @@
                             </tr>
                         </thead>
                         <tbody id="cabLogsBody">
-                            <tr><td colspan="7" class="text-center text-muted">No Cab entries recorded for selected date.</td></tr>
+                            <tr><td colspan="7" class="text-center text-muted">No entries recorded for selected date.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -289,7 +296,7 @@
             let data = await res.json();
             if (data.status === 'success') {
                 renderTable(data.logs);
-                alert("Cab Log Saved Successfully!");
+                alert("Log Saved Successfully!");
                 clearCabForm();
             }
         }
@@ -400,7 +407,7 @@
             csv.push(`"Reliever Guard", "${document.getElementById('reliever').value}"`);
             csv.push(`"Shift Supervisor", "${document.getElementById('supervisor').value}"`);
             csv.push('""');
-            csv.push('"--- NIGHT CAB LOGS ---"');
+            csv.push('"--- PARKING & CAB LOGISTICS OPERATIONS ---"');
             
             let table = document.getElementById('cabTable');
             let rows = table.querySelectorAll("tr");
@@ -417,10 +424,45 @@
             downloadLink.click();
         }
 
-        function copyCombinedText() {
-            let text = `*IDFC FIRST BANK MASTER OPERATIONS REPORT*\nDate: ${document.getElementById('date').value} | Time: ${document.getElementById('time').value} | Shift: ${document.getElementById('shift').value}\n\n*HEADCOUNT DETAILS*\nTotal: ${document.getElementById('total').value} (On Roll: ${document.getElementById('onRoll').value}, Off Roll: ${document.getElementById('offRoll').value}, Security: ${document.getElementById('security').value})\n\n*POSTINGS*\nSupervisor: ${document.getElementById('supervisor').value} | Reliever: ${document.getElementById('reliever').value}\n\n*NIGHT CAB LOGS*\n` + document.getElementById('cabLogsBody').innerText;
-            navigator.clipboard.writeText(text);
-            alert("Combined Report Copied!");
+        // WhatsApp Share Functions for Individual Reports
+        function shareHeadcountWhatsApp() {
+            let text = `*IDFC FIRST BANK - SHIFT HEADCOUNT REPORT*\n` +
+                `Date: ${document.getElementById('date').value} | Time: ${document.getElementById('time').value} | Shift: ${document.getElementById('shift').value}\n\n` +
+                `• On Roll: ${document.getElementById('onRoll').value}\n` +
+                `• Off Roll: ${document.getElementById('offRoll').value}\n` +
+                `• Security Duty: ${document.getElementById('security').value}\n` +
+                `• HK Staff: ${document.getElementById('hkStaff').value}\n` +
+                `• Technical: ${document.getElementById('technical').value}\n` +
+                `• Cafeteria: ${document.getElementById('cafeteria').value}\n` +
+                `*Total Headcount: ${document.getElementById('total').value}*`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareSecurityWhatsApp() {
+            let text = `*IDFC FIRST BANK - SECURITY POSTINGS ALLOCATION*\n` +
+                `Date: ${document.getElementById('date').value} | Shift: ${document.getElementById('shift').value}\n\n` +
+                `• Reception 01: ${document.getElementById('reception01').value}\n` +
+                `• Reception 02: ${document.getElementById('reception02').value}\n` +
+                `• P-2 Area Security: ${document.getElementById('p2Security').value}\n` +
+                `• Reliever Guard: ${document.getElementById('reliever').value}\n` +
+                `• Shift Supervisor: ${document.getElementById('supervisor').value}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareParkingWhatsApp() {
+            let text = `*IDFC FIRST BANK - PARKING & CAB LOGISTICS REPORT*\n` +
+                `Date: ${document.getElementById('date').value}\n\n` +
+                document.getElementById('cabLogsBody').innerText;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        function shareCombinedWhatsApp() {
+            let text = `*IDFC FIRST BANK - MASTER OPERATIONS REPORT*\n` +
+                `Date: ${document.getElementById('date').value} | Time: ${document.getElementById('time').value} | Shift: ${document.getElementById('shift').value}\n\n` +
+                `*HEADCOUNT:* Total ${document.getElementById('total').value} (On Roll: ${document.getElementById('onRoll').value}, Security: ${document.getElementById('security').value})\n` +
+                `*SECURITY:* Supervisor: ${document.getElementById('supervisor').value} | Reliever: ${document.getElementById('reliever').value}\n\n` +
+                `*PARKING & CAB LOGISTICS LOGS:*\n` + document.getElementById('cabLogsBody').innerText;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         searchCabLogsByDate();
