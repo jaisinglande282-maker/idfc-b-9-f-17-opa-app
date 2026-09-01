@@ -1,538 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDFC Operations & Parking Management Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f2f9f4; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .header-card { background: linear-gradient(135deg, #1b4332, #2d6a4f); color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .card { border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 15px; border: none; }
-        .card-header { background: #2d6a4f; color: white; font-weight: bold; border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
-        .btn-custom { background-color: #2d6a4f; color: white; }
-        .btn-custom:hover { background-color: #1b4332; color: white; }
-        .btn-whatsapp { background-color: #25D366; color: white; font-weight: bold; }
-        .btn-whatsapp:hover { background-color: #1ebc57; color: white; }
-        .staff-box { background: #ffffff; border: 1px solid #c8e6c9; border-radius: 8px; padding: 8px; margin-bottom: 6px; }
-        @media (max-width: 768px) {
-            .header-card h2 { font-size: 1.25rem; }
-            .btn { width: 100%; margin-bottom: 5px; }
-        }
-    </style>
-</head>
-<body class="p-2 p-md-4">
-    <div class="container-fluid">
-        
-        <!-- Header -->
-        <div class="header-card d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-                <h2 class="m-0 fw-bold">IDFC FIRST Bank Operations</h2>
-                <p class="m-0 opacity-75 small">Airoli Gigaplex Building NO-09</p>
-            </div>
-            <div class="text-end">
-                <span id="liveClock" class="badge bg-light text-dark fs-6 p-2">--:--:--</span>
-            </div>
-        </div>
+from datetime import datetime
+from flask import Flask, jsonify, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 
-        <!-- Mobile Module Selector -->
-        <div class="card p-3 mb-3 bg-white border-start border-4 border-success">
-            <label class="form-label fw-bold text-success">📱 Select Report / Section to Work:</label>
-            <select id="sectionSelector" class="form-select form-select-lg fw-bold" onchange="toggleSections()">
-                <option value="all">📱 Show All Reports (Poora Dashboard)</option>
-                <option value="headcountCard">📊 1. Shift General Info & Headcount</option>
-                <option value="securityCard">🛡️ 2. Security Postings Allocation</option>
-                <option value="staffParkingCard">🚘 3. Staff Car & Bike Parking</option>
-                <option value="cabEntryCard">🚕 4. Cab Entry & Staff Drop</option>
-                <option value="cabLogisticsCard">📋 5. Cab Drop Logistics Report</option>
-            </select>
-        </div>
+app = Flask(__name__)
 
-        <!-- Global Control Bar -->
-        <div class="card p-3 mb-3 bg-white border-start border-4 border-success">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="fw-bold text-success fs-6">⚡ Master Actions</span>
-                <div>
-                    <button class="btn btn-sm btn-outline-danger me-md-2" onclick="clearAllData()">🗑️ Clear Form</button>
-                    <button class="btn btn-sm btn-whatsapp" onclick="shareCombinedWhatsApp()">📲 Share Master Report</button>
-                </div>
-            </div>
-        </div>
+# SQLite Database Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///operations.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-        <!-- 1. General Info & Shift Headcount -->
-        <div class="card app-section" id="headcountCard">
-            <div class="card-header">📊 1. Shift General Info & Headcount Details</div>
-            <div class="card-body">
-                <div class="row g-2 mb-3">
-                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Date</label><input type="text" id="date" class="form-control form-control-sm" readonly></div>
-                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Time</label><input type="text" id="time" class="form-control form-control-sm" readonly></div>
-                    <div class="col-12 col-md-4">
-                        <label class="form-label fw-bold small">Shift Selection</label>
-                        <select id="shift" class="form-select form-select-sm">
-                            <option value="1st Shift">1st Shift</option>
-                            <option value="2nd Shift">2nd Shift</option>
-                            <option value="3rd Shift">3rd Shift</option>
-                            <option value="General Shift">General Shift</option>
-                            <option value="PTL Shift">PTL Shift</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="row g-2">
-                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">On Roll</label><input type="number" id="onRoll" class="form-control form-control-sm" value="465" oninput="calcTotal()"></div>
-                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Off Roll</label><input type="number" id="offRoll" class="form-control form-control-sm" value="29" oninput="calcTotal()"></div>
-                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Security Duty</label><input type="number" id="security" class="form-control form-control-sm" value="5" oninput="calcTotal()"></div>
-                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">HK Staff</label><input type="number" id="hkStaff" class="form-control form-control-sm" value="10" oninput="calcTotal()"></div>
-                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Technical</label><input type="number" id="technical" class="form-control form-control-sm" value="2" oninput="calcTotal()"></div>
-                    <div class="col-6 col-md-2"><label class="form-label fw-bold small">Cafeteria</label><input type="number" id="cafeteria" class="form-control form-control-sm" value="5" oninput="calcTotal()"></div>
-                    <div class="col-12 mt-2">
-                        <label class="form-label fw-bold text-success small">Total Head Count</label>
-                        <input type="number" id="total" class="form-control fw-bold fs-5 bg-light text-success" value="516" readonly>
-                    </div>
-                </div>
+# Database Models (Tables)
+class ParkingEntry(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  time = db.Column(db.String(50))
+  vehicle_type = db.Column(db.String(50))
+  vehicle_no = db.Column(db.String(50))
+  staff_name = db.Column(db.String(100))
+  slot = db.Column(db.String(50))
 
-                <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
-                    <button class="btn btn-sm btn-whatsapp" onclick="shareHeadcountWhatsApp()">📲 Share Headcount on WhatsApp</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- 2. Security Allocations -->
-        <div class="card app-section" id="securityCard">
-            <div class="card-header">🛡️ 2. Security Postings Allocation</div>
-            <div class="card-body">
-                <div class="row g-2">
-                    <div class="col-12 col-md-4">
-                        <label class="form-label fw-bold small">Select Shift</label>
-                        <select id="securityShift" class="form-select form-select-sm">
-                            <option value="1st Shift">1st Shift</option>
-                            <option value="2nd Shift">2nd Shift</option>
-                            <option value="3rd Shift">3rd Shift</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Reception 01</label><input type="text" id="reception01" class="form-control form-control-sm" value="Pooja J."></div>
-                    <div class="col-6 col-md-4"><label class="form-label fw-bold small">Reception 02</label><input type="text" id="reception02" class="form-control form-control-sm" value="Priti P."></div>
-                    <div class="col-6 col-md-6"><label class="form-label fw-bold small">PTL Security</label><input type="text" id="ptlSecurity" class="form-control form-control-sm" value="Surendra O."></div>
-                    <div class="col-6 col-md-6"><label class="form-label fw-bold small">BMS</label><input type="text" id="supervisor" class="form-control form-control-sm" value="Jaysing Lande"></div>
-                </div>
+class CabEntry(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  date = db.Column(db.String(50))
+  cab_no = db.Column(db.String(50))
+  seater = db.Column(db.String(50))
+  driver_name = db.Column(db.String(100))
+  guard = db.Column(db.String(100))
+  time = db.Column(db.String(50))
+  staff_drop = db.Column(db.Text)
 
-                <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
-                    <button class="btn btn-sm btn-whatsapp" onclick="shareSecurityWhatsApp()">📲 Share Security on WhatsApp</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- 3. Staff Car & Bike Parking Entry Form -->
-        <div class="card app-section" id="staffParkingCard">
-            <div class="card-header">🚘 3. Staff Car & Bike Parking Entry Form</div>
-            <div class="card-body">
-                <div class="row g-2">
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Vehicle Type</label>
-                        <select id="staff_vehicle_type" class="form-select form-select-sm">
-                            <option value="Car">Car</option>
-                            <option value="Bike">Bike</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Vehicle Number</label>
-                        <input type="text" id="staff_vehicle_no" class="form-control form-control-sm text-uppercase" placeholder="MH04XX1234">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Staff ID</label>
-                        <input type="text" id="staff_id" class="form-control form-control-sm text-uppercase" placeholder="IDFC1234">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Staff Name</label>
-                        <input type="text" id="staff_name" class="form-control form-control-sm" placeholder="Full Name">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Mobile</label>
-                        <input type="text" id="staff_mobile" class="form-control form-control-sm" placeholder="Mobile Number">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Slot No.</label>
-                        <input type="text" id="staff_slot" class="form-control form-control-sm" placeholder="P2-102">
-                    </div>
-                </div>
+with app.app_context():
+  db.create_all()
 
-                <div class="table-responsive mt-3">
-                    <table class="table table-bordered table-sm" id="staffParkingTable">
-                        <thead class="table-success small">
-                            <tr><th>Sr</th><th>Time</th><th>Type</th><th>Vehicle No</th><th>Staff</th><th>Slot</th></tr>
-                        </thead>
-                        <tbody id="staffParkingLogsBody" class="small">
-                            <tr><td colspan="6" class="text-center text-muted">No entries.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
 
-                <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
-                    <button class="btn btn-custom btn-sm" onclick="saveStaffParking()">💾 Save Staff Parking</button>
-                    <button class="btn btn-sm btn-whatsapp" onclick="shareStaffParkingWhatsApp()">📲 Share Parking on WhatsApp</button>
-                </div>
-            </div>
-        </div>
+@app.route('/')
+def index():
+  parking_data = ParkingEntry.query.all()
+  cab_data = CabEntry.query.all()
+  return render_template(
+      'index.html', parking_list=parking_data, cab_list=cab_data
+  )
 
-        <!-- 4. Cab Entry Form -->
-        <div class="card app-section" id="cabEntryCard">
-            <div class="card-header">🚕 4. Cab Entry Form (Driver Details Top)</div>
-            <div class="card-body">
-                <h6 class="fw-bold text-success border-bottom pb-1 small">👤 Driver Details</h6>
-                <div class="row g-2 mb-2">
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Driver Name</label>
-                        <input type="text" id="driver_name" class="form-control form-control-sm" placeholder="Driver Name">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Driver Mobile</label>
-                        <input type="text" id="driver_mobile" class="form-control form-control-sm" placeholder="Mobile">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Cab Number</label>
-                        <input type="text" id="cab_no" class="form-control form-control-sm text-uppercase" placeholder="MH04AB1234">
-                    </div>
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold small">Seater</label>
-                        <select id="seater_capacity" class="form-select form-select-sm">
-                            <option value="4-Seater">4-Seater</option>
-                            <option value="6-Seater">6-Seater</option>
-                            <option value="7-Seater">7-Seater</option>
-                            <option value="Bus / Tempo">Bus / Tempo</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-6">
-                        <label class="form-label fw-bold small">Escort Guard</label>
-                        <input type="text" id="guard_name" class="form-control form-control-sm" placeholder="Guard Name">
-                    </div>
-                    <div class="col-6 col-md-6">
-                        <label class="form-label fw-bold small">Pickup Time</label>
-                        <input type="time" id="pickup_time" class="form-control form-control-sm">
-                    </div>
-                </div>
 
-                <h6 class="fw-bold text-secondary border-bottom pb-1 mt-3 small">👥 Staff Drop Details (i, ii, iii...)</h6>
-                <div id="staffContainer"></div>
+@app.route('/save_parking', methods=['POST'])
+def save_parking():
+  data = request.json
+  new_entry = ParkingEntry(
+      time=datetime.now().strftime('%I:%M %p'),
+      vehicle_type=data.get('vehicle_type'),
+      vehicle_no=data.get('vehicle_no'),
+      staff_name=data.get('staff_name'),
+      slot=data.get('slot'),
+  )
+  db.session.add(new_entry)
+  db.session.commit()
+  return jsonify({'status': 'success'})
 
-                <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top">
-                    <button class="btn btn-custom btn-sm" onclick="submitCabLog()">💾 Save Cab Entry</button>
-                    <button class="btn btn-sm btn-whatsapp" onclick="shareCabEntryWhatsApp()">📲 Share Cab Entry on WhatsApp</button>
-                </div>
-            </div>
-        </div>
 
-        <!-- 5. Cab Drop Logistics Report -->
-        <div class="card app-section" id="cabLogisticsCard">
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                <span>🚕 5. Cab Drop Logistics Report</span>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm" id="cabTable">
-                        <thead class="table-success small">
-                            <tr>
-                                <th>Sr</th>
-                                <th>Date</th>
-                                <th>Cab No</th>
-                                <th>Seater</th>
-                                <th>Driver Details</th>
-                                <th>Guard</th>
-                                <th>Time</th>
-                                <th>Staff Drop Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cabLogsBody" class="small">
-                            <tr><td colspan="8" class="text-center text-muted">No cab log entries recorded.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="d-flex justify-content-end gap-2 mt-2 pt-2 border-top">
-                    <button class="btn btn-sm btn-whatsapp" onclick="shareCabLogisticsWhatsApp()">📲 Share Cab Logistics</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        let staffParkingList = [];
-        let romanNumerals = ['i', 'ii', 'iii', 'iv', 'v', 'vi'];
-
-        function getFormattedDate() {
-            let now = new Date();
-            return `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
-        }
-
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' });
-            document.getElementById('date').value = getFormattedDate();
-            document.getElementById('time').value = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function toggleSections() {
-            let selected = document.getElementById('sectionSelector').value;
-            let sections = document.querySelectorAll('.app-section');
-            sections.forEach(sec => {
-                if (selected === 'all' || sec.id === selected) {
-                    sec.style.display = 'block';
-                } else {
-                    sec.style.display = 'none';
-                }
-            });
-        }
-
-        function calcTotal() {
-            const fields = ['onRoll', 'offRoll', 'security', 'hkStaff', 'technical', 'cafeteria'];
-            let sum = 0;
-            fields.forEach(f => sum += parseInt(document.getElementById(f).value) || 0);
-            document.getElementById('total').value = sum;
-        }
-
-        const container = document.getElementById('staffContainer');
-        for (let i = 1; i <= 6; i++) {
-            let romanLabel = romanNumerals[i-1] + ')';
-            container.innerHTML += `
-                <div class="staff-box">
-                    <div class="row g-1 align-items-center">
-                        <div class="col-2 col-md-1"><span class="badge bg-secondary">${romanLabel}</span></div>
-                        <div class="col-5 col-md-2"><input type="text" id="emp_id_${i}" class="form-control form-control-sm text-uppercase" placeholder="Emp ID"></div>
-                        <div class="col-5 col-md-3"><input type="text" id="emp_name_${i}" class="form-control form-control-sm" placeholder="Staff Name"></div>
-                        <div class="col-6 col-md-3"><input type="text" id="emp_mob_${i}" class="form-control form-control-sm" placeholder="Mobile"></div>
-                        <div class="col-6 col-md-3"><input type="text" id="emp_loc_${i}" class="form-control form-control-sm" placeholder="Drop Location"></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function saveStaffParking() {
-            let type = document.getElementById('staff_vehicle_type').value;
-            let vehNo = document.getElementById('staff_vehicle_no').value;
-            let id = document.getElementById('staff_id').value;
-            let name = document.getElementById('staff_name').value;
-            let mob = document.getElementById('staff_mobile').value;
-            let slot = document.getElementById('staff_slot').value;
-
-            if (!vehNo || !name) {
-                alert('Vehicle Number aur Staff Name daalna zaroori hai!');
-                return;
-            }
-
-            staffParkingList.push({
-                time: document.getElementById('time').value,
-                type: type,
-                vehNo: vehNo,
-                name: name,
-                id: id,
-                mob: mob,
-                slot: slot
-            });
-
-            renderStaffParkingTable();
-            alert('Staff Vehicle Parking Saved!');
-        }
-
-        function renderStaffParkingTable() {
-            let tbody = document.getElementById('staffParkingLogsBody');
-            tbody.innerHTML = '';
-            if (staffParkingList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No entries.</td></tr>';
-                return;
-            }
-            staffParkingList.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.time}</td>
-                        <td>${item.type}</td>
-                        <td class="fw-bold">${item.vehNo}</td>
-                        <td>${item.name}</td>
-                        <td>${item.slot}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        async function submitCabLog() {
-            let cabNo = document.getElementById('cab_no').value;
-            let seater = document.getElementById('seater_capacity').value;
-            let driverName = document.getElementById('driver_name').value;
-            let driverMobile = document.getElementById('driver_mobile').value;
-            let guardName = document.getElementById('guard_name').value;
-            let pickupTime = document.getElementById('pickup_time').value;
-
-            let currentDate = getFormattedDate();
-            let currentTime = document.getElementById('time').value;
-
-            let staffList = [];
-            for (let i = 1; i <= 6; i++) {
-                let id = document.getElementById(`emp_id_${i}`).value.trim();
-                let name = document.getElementById(`emp_name_${i}`).value.trim();
-                let mobile = document.getElementById(`emp_mob_${i}`).value.trim();
-                let location = document.getElementById(`emp_loc_${i}`).value.trim();
-                if (id || name) {
-                    staffList.push({ id, name, mobile, location });
-                }
-            }
-
-            if (!cabNo || staffList.length === 0) {
-                alert('Cab Number aur kam se kam 1 Staff Details bharein!');
-                return;
-            }
-
-            let res = await fetch('/api/add_cab_log', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    entry_date: currentDate,
-                    entry_time: currentTime,
-                    cab_no: cabNo, 
-                    seater_capacity: seater, 
-                    driver_name: driverName, 
-                    driver_mobile: driverMobile, 
-                    guard_name: guardName, 
-                    pickup_time: pickupTime, 
-                    staff_list: staffList 
-                })
-            });
-
-            let data = await res.json();
-            if (data.status === 'success') {
-                renderTable(data.logs);
-                alert("Sabhi Staff Details Ke Saath Cab Log Save Ho Gaya!");
-            }
-        }
-
-        function renderTable(logs) {
-            let tbody = document.getElementById('cabLogsBody');
-            tbody.innerHTML = '';
-            if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No records found.</td></tr>';
-                return;
-            }
-            logs.forEach((l, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${l[0]}</td>
-                        <td class="fw-bold">${l[1]}</td>
-                        <td>${l[2]}</td>
-                        <td>${l[3]} (${l[4]})</td>
-                        <td>${l[5]}</td>
-                        <td>${l[6]}</td>
-                        <td>${l[7]}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function shareHeadcountWhatsApp() {
-            let text = `Headcount Details Date:-${getFormattedDate()}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                `1] On roll Employee:-${document.getElementById('onRoll').value}\n` +
-                `2] Off roll Employee:-${document.getElementById('offRoll').value}\n` +
-                `3] Security duty on:-${document.getElementById('security').value}\n` +
-                `4] H K staff on duty:-${document.getElementById('hkStaff').value}\n` +
-                `5] Technical staff:-${document.getElementById('technical').value}\n` +
-                `6] Cafeteria staff:-${document.getElementById('cafeteria').value}\n` +
-                `Total head count:-${document.getElementById('total').value}\n\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareSecurityWhatsApp() {
-            let text = `Security Postings Details Date:-${getFormattedDate()}\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `Shift:- ${document.getElementById('securityShift').value}\n\n` +
-                `1] Reception 01:-${document.getElementById('reception01').value}\n` +
-                `2] Reception 02:-${document.getElementById('reception02').value}\n` +
-                `3] PTL Security:-${document.getElementById('ptlSecurity').value}\n` +
-                `4] BMS:-${document.getElementById('supervisor').value}\n\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareStaffParkingWhatsApp() {
-            let parkingText = "";
-            staffParkingList.forEach((item, index) => {
-                parkingText += `${index + 1}] ${item.vehNo} (${item.type}) - ${item.name} [Slot: ${item.slot}]\n`;
-            });
-            let text = `Staff Parking Details Date:-${getFormattedDate()}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                (parkingText || "No Parking Entries Yet.\n") + `\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareCabEntryWhatsApp() {
-            let driverName = document.getElementById('driver_name').value || 'N/A';
-            let cabNo = document.getElementById('cab_no').value || 'N/A';
-            let seater = document.getElementById('seater_capacity').value || 'N/A';
-            let driverMobile = document.getElementById('driver_mobile').value || 'N/A';
-            let guardName = document.getElementById('guard_name').value || 'N/A';
-            let pickupTime = document.getElementById('pickup_time').value || 'N/A';
-
-            let staffListText = "";
-            let count = 0;
-            for (let i = 1; i <= 6; i++) {
-                let id = document.getElementById(`emp_id_${i}`).value.trim();
-                let name = document.getElementById(`emp_name_${i}`).value.trim();
-                let mobile = document.getElementById(`emp_mob_${i}`).value.trim();
-                let location = document.getElementById(`emp_loc_${i}`).value.trim();
-
-                if (id || name) {
-                    let roman = romanNumerals[count] || (count + 1);
-                    staffListText += `${roman})[${id}] ${name} (${mobile}) -> ${location}\n`;
-                    count++;
-                }
-            }
-
-            let text = `Cab Drop Logistics Details Date:-${getFormattedDate()}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                `1) ${driverName} ${cabNo} ${seater} (${driverMobile}) ${guardName} ${pickupTime}\n` +
-                staffListText + `\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareCabLogisticsWhatsApp() {
-            let text = `Cab Drop Logistics Details Date:-${getFormattedDate()}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                document.getElementById('cabLogsBody').innerText + `\n\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        function shareCombinedWhatsApp() {
-            let text = `Master Operations Details Date:-${getFormattedDate()}\n` +
-                `Airoli Gigaplex Building NO-09\n\n` +
-                `1] Total Headcount:- ${document.getElementById('total').value}\n` +
-                `2] Shift:- ${document.getElementById('shift').value}\n` +
-                `3] BMS Lead:- ${document.getElementById('supervisor').value}\n\n` +
-                `Regards,\n` +
-                `IDFC First bank\n` +
-                `Airoli Gigaplex Building NO-09\n` +
-                `(Jaysing lande)`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-    </script>
-</body>
-</html>
+if __name__ == '__main__':
+  app.run(debug=True)
